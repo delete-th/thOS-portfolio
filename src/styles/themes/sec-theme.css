@@ -16,5 +16,9 @@
   --thos-titlebar-fg: #00ff00;
   --thos-accent: #00ff00;
   --thos-desktop-bg: #0a0a0a;
+  /* Drop a file into public/wallpapers/ and point this at it — no
+     component changes needed. Solid --thos-desktop-bg is the fallback
+     until then. */
+  --thos-desktop-wallpaper: none;
   --thos-content-font: var(--font-terminal);
 }

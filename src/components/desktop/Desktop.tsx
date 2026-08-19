@@ -1,0 +1,132 @@
+"use client";
+
+import type { CSSProperties } from "react";
+import { AnimatePresence } from "framer-motion";
+import { Window } from "./Window";
+import { DesktopIcon } from "./DesktopIcon";
+import type { useWindowManager } from "@/hooks/useWindowManager";
+import type { DesktopIconConfig } from "@/types/desktop";
+import desktopIconsData from "@/data/desktop-config.json";
+
+const DESKTOP_ICONS = desktopIconsData as DesktopIconConfig[];
+
+export type ThemeName = "dev" | "sec";
+
+export interface DesktopProps {
+  theme?: ThemeName;
+  /**
+   * The shared window-manager instance. Owned by a component above
+   * Desktop (not Desktop itself) so Taskbar — added in the next build
+   * step — can render buttons for the same window list and share
+   * focus/minimize/restore behavior with it.
+   */
+  wm: ReturnType<typeof useWindowManager>;
+  icons?: DesktopIconConfig[];
+  className?: string;
+}
+
+function anchorStyle(icon: DesktopIconConfig): CSSProperties {
+  const style: CSSProperties = {};
+  switch (icon.anchor) {
+    case "top-left":
+      style.top = icon.offsetY;
+      style.left = icon.offsetX;
+      break;
+    case "top-right":
+      style.top = icon.offsetY;
+      style.right = icon.offsetX;
+      break;
+    case "bottom-left":
+      style.bottom = icon.offsetY;
+      style.left = icon.offsetX;
+      break;
+    case "bottom-right":
+      style.bottom = icon.offsetY;
+      style.right = icon.offsetX;
+      break;
+  }
+  return style;
+}
+
+/**
+ * The desktop surface: themed wallpaper, curated (non-grid) icons, and
+ * the layer of open windows. Icon positions come from
+ * data/desktop-config.json — adding/moving/removing a desktop icon is a
+ * data edit, not a component change.
+ */
+export function Desktop({ theme = "dev", wm, icons = DESKTOP_ICONS, className }: DesktopProps) {
+  const visibleWindows = wm.windows.filter((w) => !w.isMinimized);
+
+  return (
+    <div
+      data-thos-theme={theme}
+      className={`relative h-full w-full overflow-hidden ${className ?? ""}`}
+      style={{
+        backgroundColor: "var(--thos-desktop-bg)",
+        backgroundImage: "var(--thos-desktop-wallpaper, none)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {icons.map((icon) => (
+        <DesktopIcon
+          key={icon.id}
+          label={icon.label}
+          icon={icon.icon}
+          style={anchorStyle(icon)}
+          onOpen={() =>
+            wm.openWindow({
+              id: icon.id,
+              title: icon.window.title,
+              icon: icon.icon,
+              size: icon.window.size,
+              minWidth: icon.window.minWidth,
+              minHeight: icon.window.minHeight,
+            })
+          }
+        />
+      ))}
+
+      <AnimatePresence>
+        {visibleWindows.map((w) => (
+          <Window
+            key={w.id}
+            id={w.id}
+            title={w.title}
+            icon={w.icon}
+            position={w.position}
+            size={w.size}
+            zIndex={w.zIndex}
+            isFocused={w.isFocused}
+            isMaximized={w.isMaximized}
+            minWidth={w.minWidth}
+            minHeight={w.minHeight}
+            onFocus={wm.focusWindow}
+            onMove={wm.moveWindow}
+            onResize={wm.resizeWindow}
+            onClose={wm.closeWindow}
+            onMinimize={wm.minimizeWindow}
+            onToggleMaximize={wm.toggleMaximize}
+          >
+            <WindowPlaceholderContent
+              description={icons.find((i) => i.id === w.id)?.description}
+            />
+          </Window>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/**
+ * Stand-in body for every content window until AboutMe/ProjectExplorer/
+ * SystemProperties/ResumeViewer/EmailClient land in their own build
+ * steps — this is what makes Desktop testable/demoable on its own.
+ */
+function WindowPlaceholderContent({ description }: { description?: string }) {
+  return (
+    <p style={{ fontFamily: "var(--thos-content-font, var(--font-ui))" }}>
+      {description ?? "Content coming in a later build step."}
+    </p>
+  );
+}
