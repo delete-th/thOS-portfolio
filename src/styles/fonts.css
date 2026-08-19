@@ -1,0 +1,35 @@
+/*
+ * Pixel font declarations for thOS.
+ *
+ * Real font files are not yet in the repo — see public/fonts/. Once WOFF2
+ * builds of W95FA / Fixedsys Excelsior / an MS Sans Serif recreation are
+ * added there, uncomment the @font-face blocks below and point `src` at
+ * them. Until then, --font-ui and --font-terminal fall back to system
+ * fonts that are close in spirit, so every component that already
+ * references these variables works unchanged once the real fonts land.
+ */
+
+/*
+@font-face {
+  font-family: "W95FA";
+  src: url("/fonts/w95fa.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fixedsys Excelsior";
+  src: url("/fonts/fixedsys-excelsior.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+:root {
+  /* UI chrome + content: title bars, menus, taskbar, notepad body text */
+  --font-ui: "W95FA", ui-monospace, "MS Sans Serif", Tahoma, sans-serif;
+  /* Code / terminal-style content */
+  --font-terminal: "Fixedsys Excelsior", ui-monospace, "Courier New", monospace;
+}

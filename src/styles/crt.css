@@ -1,0 +1,7 @@
+/*
+ * CRT overlay effect (scanlines + vignette) — CSS-only, no canvas/WebGL.
+ *
+ * Implemented in components/effects/CrtOverlay.tsx (build order step 14).
+ * This file is imported from globals.css now so the import graph is
+ * stable; the actual rules land with that component.
+ */

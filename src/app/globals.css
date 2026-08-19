@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* Authentic Win98 chrome (buttons, title bars, tabs, etc.) as the base
+   layer — see thOS-portfolio-spec.md § UI Styling Base for why this is
+   used instead of building bevels/borders from scratch. */
+@import "98.css/dist/98.css";
+
+@import "../styles/fonts.css";
+@import "../styles/themes/dev-theme.css";
+@import "../styles/themes/sec-theme.css";
+@import "../styles/crt.css";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}

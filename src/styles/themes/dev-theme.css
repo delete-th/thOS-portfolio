@@ -1,0 +1,20 @@
+/*
+ * Software Development profile theme (`delete-th_dev`).
+ * Classic teal/gray Win95/2000 look.
+ *
+ * Applied when [data-thos-theme="dev"] is set on <html> by the theme
+ * system (src/hooks/useTheme.ts, added with the theme-system build step).
+ * Consumers should read these custom properties rather than hardcoding
+ * colors, so the dev/sec split stays in exactly two places.
+ */
+
+[data-thos-theme="dev"] {
+  --thos-window-bg: #c0c0c0;
+  --thos-window-fg: #000000;
+  --thos-titlebar-bg: #000080;
+  --thos-titlebar-bg-inactive: #808080;
+  --thos-titlebar-fg: #ffffff;
+  --thos-accent: #008080;
+  --thos-desktop-bg: #008080;
+  --thos-content-font: var(--font-ui);
+}

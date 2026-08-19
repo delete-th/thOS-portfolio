@@ -1,0 +1,20 @@
+/*
+ * Security Engineering profile theme (`delete-th_sec`).
+ * Dark hacker aesthetic with terminal-green accents.
+ *
+ * Applied when [data-thos-theme="sec"] is set on <html> by the theme
+ * system (src/hooks/useTheme.ts, added with the theme-system build step).
+ * Consumers should read these custom properties rather than hardcoding
+ * colors, so the dev/sec split stays in exactly two places.
+ */
+
+[data-thos-theme="sec"] {
+  --thos-window-bg: #333333;
+  --thos-window-fg: #00ff00;
+  --thos-titlebar-bg: #1a1a1a;
+  --thos-titlebar-bg-inactive: #262626;
+  --thos-titlebar-fg: #00ff00;
+  --thos-accent: #00ff00;
+  --thos-desktop-bg: #0a0a0a;
+  --thos-content-font: var(--font-terminal);
+}
