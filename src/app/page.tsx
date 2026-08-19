@@ -2,27 +2,24 @@
 
 // Entry point → Boot → Login → Desktop.
 //
-// This currently renders a small manual test harness for the Window
-// component instead of the real app: drag title bars, resize from any
-// edge/corner, focus-to-front, minimize/maximize/close. It gets replaced
-// as the window manager, boot sequence, login screen, and desktop land
-// (see thOS-portfolio-spec.md § Build order).
+// This currently renders a small manual test harness for the window
+// system instead of the real app: two "desktop icon" stand-in buttons
+// open windows via useWindowManager (opening an already-open id
+// focuses/restores it rather than duplicating it), plus a taskbar
+// stand-in for minimized windows. Replaced as the boot sequence, login
+// screen, and real desktop land (see thOS-portfolio-spec.md § Build
+// order).
 
-import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Window } from "@/components/desktop/Window";
-import type { WindowPosition, WindowSize, WindowState } from "@/types/window";
+import { useWindowManager, type OpenWindowOptions } from "@/hooks/useWindowManager";
 
-const INITIAL_WINDOWS: WindowState[] = [
+const DEMO_ICONS: OpenWindowOptions[] = [
   {
     id: "about",
     title: "about_me.txt - Notepad",
     position: { x: 120, y: 100 },
     size: { width: 420, height: 280 },
-    zIndex: 1,
-    isFocused: true,
-    isMinimized: false,
-    isMaximized: false,
     minWidth: 260,
     minHeight: 180,
   },
@@ -31,98 +28,60 @@ const INITIAL_WINDOWS: WindowState[] = [
     title: "Projects",
     position: { x: 480, y: 180 },
     size: { width: 460, height: 320 },
-    zIndex: 2,
-    isFocused: false,
-    isMinimized: false,
-    isMaximized: false,
     minWidth: 320,
     minHeight: 220,
   },
 ];
 
 export default function Home() {
-  const [windows, setWindows] = useState<WindowState[]>(INITIAL_WINDOWS);
-  const [topZ, setTopZ] = useState(2);
+  const wm = useWindowManager();
 
-  const focus = (id: string) => {
-    const next = topZ + 1;
-    setTopZ(next);
-    setWindows((prev) =>
-      prev.map((w) =>
-        w.id === id
-          ? { ...w, isFocused: true, zIndex: next }
-          : { ...w, isFocused: false },
-      ),
-    );
-  };
-
-  const move = (id: string, position: WindowPosition) =>
-    setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, position } : w)));
-
-  const resize = (id: string, size: WindowSize, position: WindowPosition) =>
-    setWindows((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, size, position } : w)),
-    );
-
-  const close = (id: string) =>
-    setWindows((prev) => prev.filter((w) => w.id !== id));
-
-  const minimize = (id: string) =>
-    setWindows((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w)),
-    );
-
-  const restore = (id: string) => {
-    setWindows((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, isMinimized: false } : w)),
-    );
-    focus(id);
-  };
-
-  const toggleMaximize = (id: string) =>
-    setWindows((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, isMaximized: !w.isMaximized } : w)),
-    );
-
-  const minimizedWindows = windows.filter((w) => w.isMinimized);
+  const visibleWindows = wm.windows.filter((w) => !w.isMinimized);
+  const minimizedWindows = wm.windows.filter((w) => w.isMinimized);
 
   return (
     <main className="relative flex-1 overflow-hidden bg-teal-700">
+      <div className="absolute top-4 left-4 z-[9999] flex gap-2">
+        {DEMO_ICONS.map((icon) => (
+          <button key={icon.id} onClick={() => wm.openWindow(icon)}>
+            Open &ldquo;{icon.title}&rdquo;
+          </button>
+        ))}
+      </div>
+
       <AnimatePresence>
-        {windows
-          .filter((w) => !w.isMinimized)
-          .map((w) => (
-            <Window
-              key={w.id}
-              id={w.id}
-              title={w.title}
-              position={w.position}
-              size={w.size}
-              zIndex={w.zIndex}
-              isFocused={w.isFocused}
-              isMaximized={w.isMaximized}
-              minWidth={w.minWidth}
-              minHeight={w.minHeight}
-              onFocus={focus}
-              onMove={move}
-              onResize={resize}
-              onClose={close}
-              onMinimize={minimize}
-              onToggleMaximize={toggleMaximize}
-            >
-              <p>
-                Window component scaffold — drag the title bar, resize from
-                any edge or corner, click to focus, minimize / maximize /
-                close.
-              </p>
-            </Window>
-          ))}
+        {visibleWindows.map((w) => (
+          <Window
+            key={w.id}
+            id={w.id}
+            title={w.title}
+            icon={w.icon}
+            position={w.position}
+            size={w.size}
+            zIndex={w.zIndex}
+            isFocused={w.isFocused}
+            isMaximized={w.isMaximized}
+            minWidth={w.minWidth}
+            minHeight={w.minHeight}
+            onFocus={wm.focusWindow}
+            onMove={wm.moveWindow}
+            onResize={wm.resizeWindow}
+            onClose={wm.closeWindow}
+            onMinimize={wm.minimizeWindow}
+            onToggleMaximize={wm.toggleMaximize}
+          >
+            <p>
+              Window manager scaffold — open the same icon twice to see it
+              focus/restore instead of duplicating.
+            </p>
+          </Window>
+        ))}
       </AnimatePresence>
 
       {minimizedWindows.length > 0 ? (
-        <div className="absolute bottom-4 left-4 flex gap-2">
+        <div className="absolute bottom-4 right-4 flex gap-2">
           {minimizedWindows.map((w) => (
-            <button key={w.id} onClick={() => restore(w.id)}>
+            <button key={w.id} onClick={() => wm.restoreWindow(w.id)}>
               {w.title}
             </button>
           ))}
