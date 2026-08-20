@@ -4,9 +4,12 @@ import type { CSSProperties } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Window } from "./Window";
 import { DesktopIcon } from "./DesktopIcon";
+import { MenuBar } from "@/components/ui/MenuBar";
 import type { useWindowManager } from "@/hooks/useWindowManager";
 import type { DesktopIconConfig } from "@/types/desktop";
+import type { MenuAction } from "@/types/menu";
 import desktopIconsData from "@/data/desktop-config.json";
+import { WINDOW_MENUS } from "@/data/window-menus";
 
 const DESKTOP_ICONS = desktopIconsData as DesktopIconConfig[];
 
@@ -66,6 +69,9 @@ export function Desktop({ theme = "dev", wm, icons = DESKTOP_ICONS, className }:
         backgroundImage: "var(--thos-desktop-wallpaper, none)",
         backgroundSize: "cover",
         backgroundPosition: "center",
+        // The wallpaper source images are genuinely low-res (480x360) —
+        // this is what keeps the upscale crisp/blocky instead of blurry.
+        imageRendering: "pixelated",
       }}
     >
       {icons.map((icon) => (
@@ -107,6 +113,16 @@ export function Desktop({ theme = "dev", wm, icons = DESKTOP_ICONS, className }:
             onClose={wm.closeWindow}
             onMinimize={wm.minimizeWindow}
             onToggleMaximize={wm.toggleMaximize}
+            menuBar={
+              WINDOW_MENUS[w.id] ? (
+                <MenuBar
+                  menus={WINDOW_MENUS[w.id]}
+                  onAction={(item: MenuAction) => {
+                    if (item.closesWindow) wm.closeWindow(w.id);
+                  }}
+                />
+              ) : undefined
+            }
           >
             <WindowPlaceholderContent
               description={icons.find((i) => i.id === w.id)?.description}

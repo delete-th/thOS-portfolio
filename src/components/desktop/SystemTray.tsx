@@ -80,7 +80,7 @@ export function SystemTray() {
       <img src="/icons/network.png" alt="" width={16} height={16} title="Network" />
 
       <span
-        className="text-xs tabular-nums"
+        className="text-[13px] tabular-nums"
         style={{ fontFamily: "var(--font-ui)" }}
       >
         {timeLabel}

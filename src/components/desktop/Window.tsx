@@ -31,6 +31,8 @@ export interface WindowProps {
   onToggleMaximize?: (id: string) => void;
   onMove: (id: string, position: WindowPosition) => void;
   onResize: (id: string, size: WindowSize, position: WindowPosition) => void;
+  /** Optional File/Edit/View/... menu bar, rendered flush below the title bar. */
+  menuBar?: ReactNode;
   children?: ReactNode;
   className?: string;
 }
@@ -78,6 +80,7 @@ export function Window({
   onToggleMaximize,
   onMove,
   onResize,
+  menuBar,
   children,
   className,
 }: WindowProps) {
@@ -151,6 +154,8 @@ export function Window({
           {onClose ? <button aria-label="Close" onClick={() => onClose(id)} /> : null}
         </div>
       </div>
+
+      {menuBar}
 
       <div className="window-body grow overflow-auto m-0">{children}</div>
 

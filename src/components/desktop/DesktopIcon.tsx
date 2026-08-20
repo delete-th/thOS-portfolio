@@ -38,7 +38,7 @@ export function DesktopIcon({ label, icon, onOpen, style }: DesktopIconProps) {
         className="line-clamp-2 max-w-20 break-words rounded-[1px] px-1 text-center leading-tight text-white group-active:bg-[var(--dialog-blue)] group-focus-visible:bg-[var(--dialog-blue)]"
         style={{
           fontFamily: "var(--font-ui)",
-          fontSize: 13,
+          fontSize: 15,
           textShadow: "1px 1px 1px rgba(0,0,0,0.9)",
         }}
       >

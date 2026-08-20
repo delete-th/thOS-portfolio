@@ -34,23 +34,36 @@ body {
 
 /* 98.css assigns its own chrome elements the (unbundled, non-existent on
    most systems) "Pixelated MS Sans Serif" family, which silently falls
-   back to plain Arial — this is unlayered, plain-CSS on purpose so it
-   wins over 98.css's `layer(base)` rule and actually applies our pixel
-   font to every piece of chrome, not just our own components. */
-button,
-label,
-input,
-legend,
-textarea,
-select,
-option,
-table,
-ul.tree-view,
-.window,
-.title-bar,
-li[role="tab"] {
-  font-family: var(--font-ui);
-  -webkit-font-smoothing: none;
+   back to plain Arial — override that here. This block is wrapped in
+   `@layer base` (not left unlayered) for the same reason 98.css itself
+   is: an unlayered rule beats every Tailwind utility regardless of
+   specificity, which would stop components from overriding this default
+   font-size on individual elements (e.g. the Start button's 14px). In
+   `base`, it still applies everywhere by default, but a component's
+   `text-[14px]` (in the higher-priority `utilities` layer) still wins
+   where one is set. */
+@layer base {
+  button,
+  label,
+  input,
+  legend,
+  textarea,
+  select,
+  option,
+  table,
+  ul.tree-view,
+  .window,
+  .title-bar,
+  li[role="tab"] {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    -webkit-font-smoothing: none;
+  }
+}
+
+/* Title bars read a little larger/bolder than general chrome. */
+.title-bar-text {
+  font-size: 14px;
 }
 
 /* Icon assets are small, hand-pixeled source images (16x16/32x32) shown

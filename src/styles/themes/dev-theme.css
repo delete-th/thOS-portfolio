@@ -16,9 +16,6 @@
   --thos-titlebar-fg: #ffffff;
   --thos-accent: #008080;
   --thos-desktop-bg: #008080;
-  /* Drop a file into public/wallpapers/ and point this at it — no
-     component changes needed. Solid --thos-desktop-bg is the fallback
-     until then. */
-  --thos-desktop-wallpaper: none;
+  --thos-desktop-wallpaper: url("/wallpapers/bliss-pixel.jpeg");
   --thos-content-font: var(--font-ui);
 }

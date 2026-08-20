@@ -1,37 +1,30 @@
 /*
  * Pixel font declarations for thOS.
  *
- * W95FA (a literal Windows 95 font recreation) doesn't have a clean,
- * reliably-licensed source to self-host, so per the spec's own fallback
- * guidance ("if W95FA isn't available, use a Google Font pixel
- * alternative") these are self-hosted, locally-served builds of two
- * open (SIL OFL) Google Fonts pulled from fonts.gstatic.com:
- *   - Pixelify Sans → --font-ui   (UI chrome: title bars, menus, taskbar, labels)
- *   - VT323         → --font-terminal (code/terminal-style content)
- * Self-hosted (not a Google Fonts <link>/@import) so the site has no
- * runtime dependency on Google's CDN, matching the spec's "web-embeddable
- * WOFF2 in public/fonts/" plan.
+ * W95FA — a proper scalable recreation of Windows 95/98's MS Sans Serif
+ * UI font — self-hosted from public/fonts/w95fa.woff2 (SIL Open Font
+ * License 1.1; see public/fonts/W95FA-OFL.txt, sourced from
+ * fontsarena.com/w95fa-by-alina-sava/). Used for all UI chrome and
+ * general content per the spec.
+ *
+ * There's currently no --font-terminal replacement — VT323 was removed
+ * on request and nothing else has been sourced yet, so terminal/code
+ * content (the sec theme's monospace areas) falls back to plain system
+ * monospace fonts for now. Revisit if/when a terminal-styled pixel font
+ * (e.g. Fixedsys Excelsior) gets sourced.
  */
 
 @font-face {
-  font-family: "Pixelify Sans";
-  src: url("/fonts/pixelify-sans-regular.woff2") format("woff2");
-  font-weight: 400 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "VT323";
-  src: url("/fonts/vt323-regular.woff2") format("woff2");
+  font-family: "W95FA";
+  src: url("/fonts/w95fa.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  /* UI chrome + content: title bars, menus, taskbar, notepad body text */
-  --font-ui: "Pixelify Sans", ui-monospace, "MS Sans Serif", Tahoma, sans-serif;
-  /* Code / terminal-style content */
-  --font-terminal: "VT323", ui-monospace, "Courier New", monospace;
+  /* UI chrome + general content: title bars, menus, taskbar, labels, notepad body text */
+  --font-ui: "W95FA", "MS Sans Serif", Tahoma, sans-serif;
+  /* Code / terminal-style content — no pixel font sourced yet, see note above */
+  --font-terminal: ui-monospace, "Courier New", monospace;
 }
