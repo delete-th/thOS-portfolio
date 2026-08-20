@@ -1,12 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { StartButton } from "./StartButton";
+import { StartMenu } from "./StartMenu";
 import { SystemTray } from "./SystemTray";
 import type { useWindowManager } from "@/hooks/useWindowManager";
-import type { DesktopIconConfig } from "@/types/desktop";
-import desktopIconsData from "@/data/desktop-config.json";
-
-const QUICK_LAUNCH_ICONS = desktopIconsData as DesktopIconConfig[];
 
 const DIVIDER_STYLE = {
   boxShadow: "var(--border-sunken-outer), var(--border-sunken-inner)",
@@ -15,15 +13,21 @@ const DIVIDER_STYLE = {
 export interface TaskbarProps {
   /** Shared with Desktop so window buttons stay in sync with what's open. */
   wm: ReturnType<typeof useWindowManager>;
+  /** Wired to the Start menu's "Shut Down" item. */
+  onShutDown: () => void;
   className?: string;
 }
 
 /**
- * Full taskbar: Start button, quick-launch shortcuts, one button per
- * open window (minimized or not — that's how you get them back), and
- * the system tray.
+ * Full taskbar: Start button (+ menu), one button per open window
+ * (minimized or not — that's how you get them back), and the system
+ * tray. Quick-launch icons were removed — they were redundant with the
+ * desktop icons and are now also reachable via the Start menu's
+ * Programs submenu.
  */
-export function Taskbar({ wm, className }: TaskbarProps) {
+export function Taskbar({ wm, onShutDown, className }: TaskbarProps) {
+  const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
+
   const handleWindowButtonClick = (id: string) => {
     const w = wm.windows.find((win) => win.id === id);
     if (!w) return;
@@ -38,40 +42,21 @@ export function Taskbar({ wm, className }: TaskbarProps) {
 
   return (
     <div
-      className={`flex h-9 shrink-0 items-center gap-2 px-1 ${className ?? ""}`}
+      className={`relative flex h-10 shrink-0 items-center gap-2 px-1 ${className ?? ""}`}
       style={{
         background: "var(--surface)",
         boxShadow: "var(--border-raised-outer), var(--border-raised-inner)",
       }}
     >
-      <StartButton />
+      <StartButton isOpen={isStartMenuOpen} onClick={() => setIsStartMenuOpen((o) => !o)} />
 
-      <div className="h-6 w-0.5 shrink-0" style={DIVIDER_STYLE} />
-
-      <div className="flex shrink-0 items-center gap-1">
-        {QUICK_LAUNCH_ICONS.map((icon) => (
-          <button
-            key={icon.id}
-            type="button"
-            onClick={() =>
-              wm.openWindow({
-                id: icon.id,
-                title: icon.window.title,
-                icon: icon.icon,
-                size: icon.window.size,
-                minWidth: icon.window.minWidth,
-                minHeight: icon.window.minHeight,
-              })
-            }
-            title={icon.label}
-            aria-label={`Open ${icon.label}`}
-            className="flex h-7 w-7 items-center justify-center"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size UI chrome icon */}
-            <img src={icon.icon} alt="" width={16} height={16} draggable={false} />
-          </button>
-        ))}
-      </div>
+      {isStartMenuOpen ? (
+        <StartMenu
+          wm={wm}
+          onClose={() => setIsStartMenuOpen(false)}
+          onShutDown={onShutDown}
+        />
+      ) : null}
 
       <div className="h-6 w-0.5 shrink-0" style={DIVIDER_STYLE} />
 
@@ -84,7 +69,7 @@ export function Taskbar({ wm, className }: TaskbarProps) {
               type="button"
               onClick={() => handleWindowButtonClick(w.id)}
               aria-pressed={isActive}
-              className="flex h-7 min-w-0 max-w-[200px] flex-1 items-center gap-1.5 overflow-hidden px-2 text-left text-xs"
+              className="flex h-[22px] min-w-0 max-w-[200px] flex-1 items-center gap-1.5 overflow-hidden px-2 text-left text-xs"
               style={isActive ? DIVIDER_STYLE : undefined}
             >
               {w.icon ? (

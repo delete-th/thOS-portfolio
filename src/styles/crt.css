@@ -1,7 +1,39 @@
 /*
  * CRT overlay effect (scanlines + vignette) — CSS-only, no canvas/WebGL.
- *
- * Implemented in components/effects/CrtOverlay.tsx (build order step 14).
- * This file is imported from globals.css now so the import graph is
- * stable; the actual rules land with that component.
+ * Rendered via components/effects/CrtOverlay.tsx in the root layout, so
+ * it sits above everything (boot, login, desktop) uniformly. Kept
+ * intentionally subtle — this should read as "old monitor," not
+ * obscure the UI.
  */
+
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.crt-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.06) 2px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+}
+
+.crt-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+}

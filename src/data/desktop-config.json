@@ -2,7 +2,7 @@
   {
     "id": "about",
     "label": "about_me.txt",
-    "icon": "/icons/notepad.svg",
+    "icon": "/icons/notepad.png",
     "anchor": "top-left",
     "offsetX": 32,
     "offsetY": 32,
@@ -17,10 +17,10 @@
   {
     "id": "projects",
     "label": "Projects",
-    "icon": "/icons/folder.svg",
+    "icon": "/icons/folder.png",
     "anchor": "top-left",
-    "offsetX": 32,
-    "offsetY": 140,
+    "offsetX": 30,
+    "offsetY": 138,
     "description": "This will be the Projects file explorer once the ProjectExplorer component lands.",
     "window": {
       "title": "Projects",
@@ -32,10 +32,10 @@
   {
     "id": "system-properties",
     "label": "System Properties",
-    "icon": "/icons/settings.svg",
+    "icon": "/icons/computer.png",
     "anchor": "top-left",
-    "offsetX": 32,
-    "offsetY": 248,
+    "offsetX": 34,
+    "offsetY": 252,
     "description": "This will be the Skills / Tech Stack System Properties dialog once that component lands.",
     "window": {
       "title": "System Properties",
@@ -47,10 +47,10 @@
   {
     "id": "resume",
     "label": "resume.pdf",
-    "icon": "/icons/document.svg",
+    "icon": "/icons/document.png",
     "anchor": "top-left",
-    "offsetX": 32,
-    "offsetY": 356,
+    "offsetX": 31,
+    "offsetY": 353,
     "description": "This will be the Resume viewer once the ResumeViewer component lands.",
     "window": {
       "title": "resume.pdf",
@@ -62,10 +62,10 @@
   {
     "id": "contact",
     "label": "email_client.exe",
-    "icon": "/icons/mail.svg",
+    "icon": "/icons/mail.png",
     "anchor": "top-left",
-    "offsetX": 32,
-    "offsetY": 464,
+    "offsetX": 33,
+    "offsetY": 468,
     "description": "This will be the Contact email client once the EmailClient component lands.",
     "window": {
       "title": "New Message - email_client.exe",
@@ -77,7 +77,7 @@
   {
     "id": "recycle-bin",
     "label": "Recycle Bin",
-    "icon": "/icons/recycle-bin.svg",
+    "icon": "/icons/recycle-bin.png",
     "anchor": "bottom-right",
     "offsetX": 32,
     "offsetY": 32,

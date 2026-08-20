@@ -2,8 +2,13 @@
 
 /* Authentic Win98 chrome (buttons, title bars, tabs, etc.) as the base
    layer — see thOS-portfolio-spec.md § UI Styling Base for why this is
-   used instead of building bevels/borders from scratch. */
-@import "98.css/dist/98.css";
+   used instead of building bevels/borders from scratch.
+   Imported into Tailwind's `base` layer (not left unlayered) so that
+   component-level Tailwind utilities — which live in the higher-priority
+   `utilities` layer — can actually override 98.css's element-selector
+   defaults (e.g. resetting a desktop icon's <button> back to chrome-less).
+   Left unlayered, 98.css would always win regardless of specificity. */
+@import "98.css/dist/98.css" layer(base);
 
 @import "../styles/fonts.css";
 @import "../styles/themes/dev-theme.css";
@@ -23,4 +28,42 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: none;
+}
+
+/* 98.css assigns its own chrome elements the (unbundled, non-existent on
+   most systems) "Pixelated MS Sans Serif" family, which silently falls
+   back to plain Arial — this is unlayered, plain-CSS on purpose so it
+   wins over 98.css's `layer(base)` rule and actually applies our pixel
+   font to every piece of chrome, not just our own components. */
+button,
+label,
+input,
+legend,
+textarea,
+select,
+option,
+table,
+ul.tree-view,
+.window,
+.title-bar,
+li[role="tab"] {
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: none;
+}
+
+/* Icon assets are small, hand-pixeled source images (16x16/32x32) shown
+   larger — scale them with hard edges, not browser smoothing. */
+img[src^="/icons/"] {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Windows 98 used a dotted focus rect, and only for keyboard/programmatic
+   focus (:focus-visible), not every mouse click. */
+:focus-visible {
+  outline: 1px dotted var(--text-color, #000000);
+  outline-offset: 1px;
 }

@@ -14,6 +14,15 @@ export interface DesktopIconProps {
  * parent (Desktop computes the position from desktop-config.json's
  * anchor/offset). Per the spec, a single click opens the window —
  * there's no separate "select" state to manage.
+ *
+ * No visible background/border on the icon itself — real Windows
+ * desktop icons float directly on the wallpaper. The only chrome is a
+ * navy highlight behind the *label text* while clicking/focusing —
+ * never behind the icon image. 98.css styles every <button> with
+ * raised 3D dialog-button chrome by default (it's meant for dialog
+ * buttons); that's exactly wrong here, so it's reset explicitly below
+ * via higher-specificity Tailwind utilities rather than relying on
+ * 98.css's bare-element defaults.
  */
 export function DesktopIcon({ label, icon, onOpen, style }: DesktopIconProps) {
   return (
@@ -21,15 +30,16 @@ export function DesktopIcon({ label, icon, onOpen, style }: DesktopIconProps) {
       type="button"
       onClick={onOpen}
       style={style}
-      className="absolute flex w-24 flex-col items-center gap-1 rounded-sm border border-transparent p-1 text-center hover:bg-white/10 focus:outline-none focus-visible:border-dotted focus-visible:border-white/80"
+      className="group absolute flex w-24 min-w-0 min-h-0 flex-col items-center gap-1 border-0 bg-transparent p-1 shadow-none"
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size UI icon asset, not content */}
-      <img src={icon} alt="" width={40} height={40} draggable={false} />
+      <img src={icon} alt="" width={48} height={48} draggable={false} />
       <span
-        className="text-xs leading-tight text-white"
+        className="line-clamp-2 max-w-20 break-words rounded-[1px] px-1 text-center leading-tight text-white group-active:bg-[var(--dialog-blue)] group-focus-visible:bg-[var(--dialog-blue)]"
         style={{
           fontFamily: "var(--font-ui)",
-          textShadow: "1px 1px 2px rgba(0,0,0,0.8)",
+          fontSize: 13,
+          textShadow: "1px 1px 1px rgba(0,0,0,0.9)",
         }}
       >
         {label}

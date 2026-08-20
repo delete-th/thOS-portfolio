@@ -1,35 +1,37 @@
 /*
  * Pixel font declarations for thOS.
  *
- * Real font files are not yet in the repo — see public/fonts/. Once WOFF2
- * builds of W95FA / Fixedsys Excelsior / an MS Sans Serif recreation are
- * added there, uncomment the @font-face blocks below and point `src` at
- * them. Until then, --font-ui and --font-terminal fall back to system
- * fonts that are close in spirit, so every component that already
- * references these variables works unchanged once the real fonts land.
+ * W95FA (a literal Windows 95 font recreation) doesn't have a clean,
+ * reliably-licensed source to self-host, so per the spec's own fallback
+ * guidance ("if W95FA isn't available, use a Google Font pixel
+ * alternative") these are self-hosted, locally-served builds of two
+ * open (SIL OFL) Google Fonts pulled from fonts.gstatic.com:
+ *   - Pixelify Sans → --font-ui   (UI chrome: title bars, menus, taskbar, labels)
+ *   - VT323         → --font-terminal (code/terminal-style content)
+ * Self-hosted (not a Google Fonts <link>/@import) so the site has no
+ * runtime dependency on Google's CDN, matching the spec's "web-embeddable
+ * WOFF2 in public/fonts/" plan.
  */
 
-/*
 @font-face {
-  font-family: "W95FA";
-  src: url("/fonts/w95fa.woff2") format("woff2");
-  font-weight: normal;
+  font-family: "Pixelify Sans";
+  src: url("/fonts/pixelify-sans-regular.woff2") format("woff2");
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Fixedsys Excelsior";
-  src: url("/fonts/fixedsys-excelsior.woff2") format("woff2");
+  font-family: "VT323";
+  src: url("/fonts/vt323-regular.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
-*/
 
 :root {
   /* UI chrome + content: title bars, menus, taskbar, notepad body text */
-  --font-ui: "W95FA", ui-monospace, "MS Sans Serif", Tahoma, sans-serif;
+  --font-ui: "Pixelify Sans", ui-monospace, "MS Sans Serif", Tahoma, sans-serif;
   /* Code / terminal-style content */
-  --font-terminal: "Fixedsys Excelsior", ui-monospace, "Courier New", monospace;
+  --font-terminal: "VT323", ui-monospace, "Courier New", monospace;
 }

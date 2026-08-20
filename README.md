@@ -40,3 +40,7 @@ src/
 Built incrementally, one finished component per commit — see commit history for the build order (window system → theming → boot/login → content windows → sound/effects → mobile → SEO).
 
 Full spec: `thOS-portfolio-spec.md` (gitignored, private planning doc).
+
+## Asset credits
+
+Desktop icons (`public/icons/{folder,notepad,computer,document,mail,recycle-bin}.png`) are extracted Windows 98 icon resources from [alexh/vintage-icons](https://github.com/alexh/vintage-icons) (MIT, per that repo's README). `thos-logo.svg` is an original placeholder.

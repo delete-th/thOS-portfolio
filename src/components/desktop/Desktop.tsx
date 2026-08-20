@@ -126,7 +126,7 @@ export function Desktop({ theme = "dev", wm, icons = DESKTOP_ICONS, className }:
 function WindowPlaceholderContent({ description }: { description?: string }) {
   return (
     <p style={{ fontFamily: "var(--thos-content-font, var(--font-ui))" }}>
-      {description ?? "Content coming in a later build step."}
+      {description ?? "Coming soon."}
     </p>
   );
 }
