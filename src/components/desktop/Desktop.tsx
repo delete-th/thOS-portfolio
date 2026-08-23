@@ -13,15 +13,11 @@ import { WINDOW_MENUS } from "@/data/window-menus";
 
 const DESKTOP_ICONS = desktopIconsData as DesktopIconConfig[];
 
-export type ThemeName = "dev" | "sec";
-
 export interface DesktopProps {
-  theme?: ThemeName;
   /**
    * The shared window-manager instance. Owned by a component above
-   * Desktop (not Desktop itself) so Taskbar — added in the next build
-   * step — can render buttons for the same window list and share
-   * focus/minimize/restore behavior with it.
+   * Desktop (not Desktop itself) so Taskbar can render buttons for the
+   * same window list and share focus/minimize/restore behavior with it.
    */
   wm: ReturnType<typeof useWindowManager>;
   icons?: DesktopIconConfig[];
@@ -56,13 +52,19 @@ function anchorStyle(icon: DesktopIconConfig): CSSProperties {
  * the layer of open windows. Icon positions come from
  * data/desktop-config.json — adding/moving/removing a desktop icon is a
  * data edit, not a component change.
+ *
+ * Doesn't take a `theme` prop — `useTheme` (see hooks/useTheme.ts) sets
+ * `data-thos-theme` on `<html>`, which every `--thos-*` token in
+ * styles/themes/*.css and styles/chrome-theme.css is scoped to. That
+ * covers Desktop's own background here *and* the Taskbar/Window chrome
+ * that live outside Desktop's subtree, which a locally-set attribute
+ * on this div never could.
  */
-export function Desktop({ theme = "dev", wm, icons = DESKTOP_ICONS, className }: DesktopProps) {
+export function Desktop({ wm, icons = DESKTOP_ICONS, className }: DesktopProps) {
   const visibleWindows = wm.windows.filter((w) => !w.isMinimized);
 
   return (
     <div
-      data-thos-theme={theme}
       className={`relative h-full w-full overflow-hidden ${className ?? ""}`}
       style={{
         backgroundColor: "var(--thos-desktop-bg)",

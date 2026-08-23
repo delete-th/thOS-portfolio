@@ -7,13 +7,30 @@
    component-level Tailwind utilities — which live in the higher-priority
    `utilities` layer — can actually override 98.css's element-selector
    defaults (e.g. resetting a desktop icon's <button> back to chrome-less).
-   Left unlayered, 98.css would always win regardless of specificity. */
-@import "98.css/dist/98.css" layer(base);
+   Left unlayered, 98.css would always win regardless of specificity.
+
+   Deliberately `98.css/style.css` (the unminified source), NOT
+   `98.css/dist/98.css`. The published dist build runs its custom
+   properties through a minifier that inlines every var() to a literal
+   value and strips the `:root` block that defined them — so any of
+   *our own* CSS referencing e.g. var(--dialog-blue) or
+   var(--border-sunken-outer) (Taskbar's dividers, MenuBar separators,
+   the boot loading bar, the focus outline below) silently resolved to
+   nothing against dist. style.css keeps the real `:root` variables, at
+   the cost of pulling in 98.css's own (unused — we override the font
+   everywhere) bundled font-face declarations too, which is harmless. */
+@import "98.css/style.css" layer(base);
 
 @import "../styles/fonts.css";
 @import "../styles/themes/dev-theme.css";
 @import "../styles/themes/sec-theme.css";
 @import "../styles/crt.css";
+
+/* Applies the theme tokens defined just above to 98.css's actual .window
+   /.title-bar classes. Also `layer(base)`, imported after 98.css within
+   that same layer, so it wins on equal specificity — same reasoning as
+   98.css's own layering above. */
+@import "../styles/chrome-theme.css" layer(base);
 
 :root {
   --background: #ffffff;

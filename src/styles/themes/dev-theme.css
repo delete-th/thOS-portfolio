@@ -3,9 +3,12 @@
  * Classic teal/gray Win95/2000 look.
  *
  * Applied when [data-thos-theme="dev"] is set on <html> by the theme
- * system (src/hooks/useTheme.ts, added with the theme-system build step).
- * Consumers should read these custom properties rather than hardcoding
- * colors, so the dev/sec split stays in exactly two places.
+ * system (src/hooks/useTheme.ts). Consumers should read these custom
+ * properties rather than hardcoding colors, so the dev/sec split stays
+ * in exactly two places. These values are also the ones the visual
+ * polish rounds were tuned against — this file is the "already
+ * correct, don't change" baseline; sec-theme.css is where the dark
+ * variant lives.
  */
 
 [data-thos-theme="dev"] {
@@ -16,6 +19,17 @@
   --thos-titlebar-fg: #ffffff;
   --thos-accent: #008080;
   --thos-desktop-bg: #008080;
-  --thos-desktop-wallpaper: url("/wallpapers/bliss-pixel.jpeg");
+  --thos-desktop-wallpaper: url("/wallpapers/library.jpg");
   --thos-content-font: var(--font-ui);
+
+  /* Taskbar / Start button / taskbar window buttons */
+  --thos-taskbar-bg: #d4d0c8;
+  /* Start menu panel + every menu-bar dropdown */
+  --thos-panel-bg: #c0c0c0;
+  --thos-panel-fg: #000000;
+  /* Selected/hovered menu item */
+  --thos-menu-hover-bg: #000080;
+  --thos-menu-hover-fg: #ffffff;
+  /* The Start menu's vertical "thOS" sidebar stripe */
+  --thos-sidebar-gradient: linear-gradient(to top, #000080, #1084d0);
 }

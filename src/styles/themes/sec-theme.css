@@ -3,9 +3,9 @@
  * Dark hacker aesthetic with terminal-green accents.
  *
  * Applied when [data-thos-theme="sec"] is set on <html> by the theme
- * system (src/hooks/useTheme.ts, added with the theme-system build step).
- * Consumers should read these custom properties rather than hardcoding
- * colors, so the dev/sec split stays in exactly two places.
+ * system (src/hooks/useTheme.ts). Consumers should read these custom
+ * properties rather than hardcoding colors, so the dev/sec split stays
+ * in exactly two places.
  */
 
 [data-thos-theme="sec"] {
@@ -18,4 +18,16 @@
   --thos-desktop-bg: #0a0a0a;
   --thos-desktop-wallpaper: url("/wallpapers/dark-matrix-pixel.png");
   --thos-content-font: var(--font-terminal);
+
+  /* Taskbar / Start button / taskbar window buttons */
+  --thos-taskbar-bg: #111111;
+  /* Start menu panel + every menu-bar dropdown */
+  --thos-panel-bg: #1a1a1a;
+  --thos-panel-fg: #00ff00;
+  /* Selected/hovered menu item — inverted terminal-bar style: bright
+     green fill, black text, rather than reusing the dev theme's navy. */
+  --thos-menu-hover-bg: #00ff00;
+  --thos-menu-hover-fg: #000000;
+  /* The Start menu's vertical "thOS" sidebar stripe */
+  --thos-sidebar-gradient: linear-gradient(to top, #003300, #00aa00);
 }

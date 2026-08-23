@@ -35,7 +35,7 @@ export function DesktopIcon({ label, icon, onOpen, style }: DesktopIconProps) {
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size UI icon asset, not content */}
       <img src={icon} alt="" width={48} height={48} draggable={false} />
       <span
-        className="line-clamp-2 max-w-20 break-words rounded-[1px] px-1 text-center leading-tight text-white group-active:bg-[var(--dialog-blue)] group-focus-visible:bg-[var(--dialog-blue)]"
+        className="line-clamp-2 max-w-20 break-words rounded-[1px] px-1 text-center leading-tight text-white group-active:bg-[var(--thos-menu-hover-bg)] group-active:text-[var(--thos-menu-hover-fg)] group-focus-visible:bg-[var(--thos-menu-hover-bg)] group-focus-visible:text-[var(--thos-menu-hover-fg)]"
         style={{
           fontFamily: "var(--font-ui)",
           fontSize: 15,

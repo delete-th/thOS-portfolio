@@ -1,0 +1,32 @@
+/*
+ * Wires the active theme's --thos-* tokens (defined per-theme in
+ * themes/dev-theme.css and themes/sec-theme.css) into 98.css's actual
+ * chrome classes. This file itself never needs to know which theme is
+ * active, or even that a second theme exists — it just reads whatever
+ * --thos-* values are currently in scope under [data-thos-theme] on
+ * <html>, so adding a third profile later means adding a third
+ * themes/*.css file, not touching this one.
+ *
+ * dev-theme.css's values happen to equal 98.css's own built-in
+ * defaults (light gray window, navy title bar) — these rules still
+ * apply for dev, just invisibly, so dev's look doesn't depend on that
+ * coincidence holding if 98.css's defaults ever change upstream.
+ */
+
+[data-thos-theme] .window,
+[data-thos-theme] .window-body {
+  background: var(--thos-window-bg);
+  color: var(--thos-window-fg);
+}
+
+[data-thos-theme] .title-bar {
+  background: var(--thos-titlebar-bg);
+}
+
+[data-thos-theme] .title-bar.inactive {
+  background: var(--thos-titlebar-bg-inactive);
+}
+
+[data-thos-theme] .title-bar-text {
+  color: var(--thos-titlebar-fg);
+}

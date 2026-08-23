@@ -11,7 +11,7 @@ export interface MenuBarProps {
 }
 
 const TOP_ITEM_CLASS =
-  "min-w-0 min-h-0 border-0 bg-transparent px-2 py-0.5 text-[14px] shadow-none hover:bg-[var(--dialog-blue)] hover:text-white";
+  "min-w-0 min-h-0 border-0 bg-transparent px-2 py-0.5 text-[14px] shadow-none hover:bg-[var(--thos-menu-hover-bg)] hover:text-[var(--thos-menu-hover-fg)]";
 
 /**
  * A classic Win95/98 application menu bar: File/Edit/View/... across
@@ -57,14 +57,20 @@ export function MenuBar({ menus, onAction }: MenuBarProps) {
     <div
       ref={rootRef}
       className="relative flex h-6 shrink-0 items-center border-b"
-      style={{ background: "var(--surface)", borderColor: "var(--button-shadow)" }}
+      style={{
+        background: "var(--thos-panel-bg)",
+        color: "var(--thos-panel-fg)",
+        borderColor: "var(--button-shadow)",
+      }}
     >
       {menus.map((menu, index) => (
         <div key={menu.label} className="relative">
           <button
             type="button"
             className={`${TOP_ITEM_CLASS} ${
-              openIndex === index ? "bg-[var(--dialog-blue)] text-white" : ""
+              openIndex === index
+                ? "bg-[var(--thos-menu-hover-bg)] text-[var(--thos-menu-hover-fg)]"
+                : ""
             }`}
             onClick={() => setOpenIndex((current) => (current === index ? null : index))}
           >
@@ -95,7 +101,7 @@ export function MenuBar({ menus, onAction }: MenuBarProps) {
                     className={`flex w-full min-w-0 min-h-0 items-center justify-between gap-6 border-0 bg-transparent px-2 py-1 text-left text-[13px] shadow-none ${
                       item.disabled
                         ? "text-[var(--button-shadow)]"
-                        : "hover:bg-[var(--dialog-blue)] hover:text-white"
+                        : "hover:bg-[var(--thos-menu-hover-bg)] hover:text-[var(--thos-menu-hover-fg)]"
                     }`}
                   >
                     <span>

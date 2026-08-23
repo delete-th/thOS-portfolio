@@ -22,7 +22,7 @@ export interface StartMenuProps {
 }
 
 const MENU_ITEM_CLASS =
-  "flex w-full min-w-0 min-h-0 items-center gap-2 border-0 bg-transparent px-2 py-1.5 text-left shadow-none hover:bg-[var(--dialog-blue)] hover:text-white";
+  "flex w-full min-w-0 min-h-0 items-center gap-2 border-0 bg-transparent px-2 py-1.5 text-left shadow-none hover:bg-[var(--thos-menu-hover-bg)] hover:text-[var(--thos-menu-hover-fg)]";
 
 const ITEM_TEXT_STYLE: CSSProperties = { fontFamily: "var(--font-ui)", fontSize: 14 };
 
@@ -64,10 +64,10 @@ export function StartMenu({ wm, onClose, onShutDown }: StartMenuProps) {
 
   return (
     <div className="absolute bottom-full left-0 z-[500] mb-0.5 flex w-56" style={OPAQUE_PANEL_STYLE}>
-      {/* The iconic vertical navy sidebar */}
+      {/* The iconic vertical sidebar stripe — navy for dev, green for sec */}
       <div
         className="flex w-6 shrink-0 items-end justify-center pb-2"
-        style={{ background: "linear-gradient(to top, #000080, #1084d0)" }}
+        style={{ background: "var(--thos-sidebar-gradient)" }}
       >
         <span
           className="whitespace-nowrap text-lg font-bold tracking-widest text-[#c0c0c0]"
