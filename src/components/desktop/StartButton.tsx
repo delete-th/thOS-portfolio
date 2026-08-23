@@ -1,6 +1,6 @@
 "use client";
 
-import { TASKBAR_SURFACE } from "@/lib/win98Panel";
+import { TASKBAR_SURFACE, TASKBAR_TEXT_STYLE } from "@/lib/win98Panel";
 
 export interface StartButtonProps {
   isOpen: boolean;
@@ -21,6 +21,7 @@ export function StartButton({ isOpen, onClick }: StartButtonProps) {
       className="flex h-[22px] min-w-[54px] shrink-0 items-center gap-1.5 px-2 text-[14px] font-bold"
       style={{
         backgroundColor: TASKBAR_SURFACE,
+        ...TASKBAR_TEXT_STYLE,
         ...(isOpen
           ? { boxShadow: "var(--border-sunken-outer), var(--border-sunken-inner)" }
           : null),

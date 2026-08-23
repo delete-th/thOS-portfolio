@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CrtOverlay } from "@/components/effects/CrtOverlay";
+import { FullscreenToggle } from "@/components/ui/FullscreenToggle";
 
 // Real title/description/OpenGraph tags land with the SEO build step.
 // This is a placeholder so the tab doesn't say "Create Next App".
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col">
         {children}
+        <FullscreenToggle />
         <CrtOverlay />
       </body>
     </html>

@@ -2,7 +2,6 @@
 
 import { useMemo, useState, type CSSProperties } from "react";
 import type { useWindowManager } from "@/hooks/useWindowManager";
-import { useFullscreen } from "@/hooks/useFullscreen";
 import type { ThemeName } from "@/hooks/useTheme";
 import type { DesktopIconConfig } from "@/types/desktop";
 import { getActiveDesktopIcons } from "@/lib/activeDesktopIcons";
@@ -25,23 +24,31 @@ const ITEM_TEXT_STYLE: CSSProperties = { fontFamily: "var(--font-ui)", fontSize:
 
 /**
  * Classic Windows 98 Start menu: navy "thOS" sidebar, Documents /
- * Settings / Programs (click-to-expand submenu, not hover) / Full
- * Screen / Shut Down. Closes on outside click or Escape — handled by
- * the parent Taskbar (which owns the open/closed state and wraps both
- * the Start button and this menu in one click-outside boundary; see
+ * Settings / Programs (click-to-expand submenu, not hover) / Shut
+ * Down. Closes on outside click or Escape — handled by the parent
+ * Taskbar (which owns the open/closed state and wraps both the Start
+ * button and this menu in one click-outside boundary; see
  * Taskbar.tsx). This was explicitly deferred to "Future Enhancements"
  * in the original spec, now built per direct request.
+ *
+ * No Full Screen entry — that's now the floating top-right toggle (see
+ * FullscreenToggle.tsx) instead of a menu item.
  */
 export function StartMenu({ wm, theme, onClose, onShutDown }: StartMenuProps) {
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
-  const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   const icons = useMemo(() => getActiveDesktopIcons(theme), [theme]);
-  const documentsIcon = icons.find((icon) => icon.id === "projects");
-  // Everything openable except Projects (promoted to "Documents") and
-  // the Recycle Bin (not a program).
+  // "Documents" always opens My Computer now, not Projects/secure_vault
+  // directly (theme-independent — my-computer isn't a THEME_SWAPPED_PAIRS
+  // entry, so it's present in `icons` on both themes). Projects/
+  // secure_vault are still reachable — from there, or from Programs
+  // below, or straight off the desktop.
+  const documentsIcon = icons.find((icon) => icon.id === "my-computer");
+  // Everything openable except My Computer itself (it already has its
+  // own direct Documents entry above) and the Recycle Bin (not a
+  // program).
   const programIcons = icons.filter(
-    (icon) => icon.id !== "projects" && icon.id !== "recycle-bin",
+    (icon) => icon.id !== "my-computer" && icon.id !== "recycle-bin",
   );
 
   const openAndClose = (icon: DesktopIconConfig) => {
@@ -135,12 +142,6 @@ export function StartMenu({ wm, theme, onClose, onShutDown }: StartMenuProps) {
             </div>
           ) : null}
         </div>
-
-        <button type="button" className={MENU_ITEM_CLASS} onClick={toggleFullscreen}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size UI icon */}
-          <img src="/icons/fullscreen.svg" alt="" width={16} height={16} />
-          <span style={ITEM_TEXT_STYLE}>{isFullscreen ? "Exit Full Screen" : "Full Screen"}</span>
-        </button>
 
         <div
           className="mx-2 my-1 h-px shrink-0"

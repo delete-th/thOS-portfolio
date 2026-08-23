@@ -39,3 +39,11 @@
 [data-thos-theme] .window-body pre {
   background: var(--thos-field-bg);
 }
+
+/* 98.css hardcodes tab labels to #222 (dark) regardless of theme —
+   fine on dev's light window body, invisible against sec's dark one.
+   Same dark-on-dark class of bug as the taskbar text fix in
+   lib/win98Panel.ts; same fix shape. */
+[data-thos-theme] menu[role="tablist"] > li > a {
+  color: var(--thos-window-fg);
+}

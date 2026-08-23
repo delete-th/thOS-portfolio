@@ -1,32 +1,53 @@
 "use client";
 
-import type { ComponentType, CSSProperties } from "react";
+import { useState, type ComponentType, type CSSProperties } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Window } from "./Window";
 import { DesktopIcon } from "./DesktopIcon";
 import { MenuBar } from "@/components/ui/MenuBar";
 import { ThExplorer } from "@/components/windows/ThExplorer";
 import { ThTerminal } from "@/components/windows/ThTerminal";
+import { SecureVault } from "@/components/windows/SecureVault";
+import { SystemProperties } from "@/components/windows/SystemProperties";
+import { MailMe } from "@/components/windows/MailMe";
+import { MyComputer } from "@/components/windows/MyComputer";
 import { openDesktopWindow } from "@/lib/openDesktopWindow";
 import type { useWindowManager } from "@/hooks/useWindowManager";
 import type { DesktopIconConfig } from "@/types/desktop";
 import type { MenuAction } from "@/types/menu";
 import { WINDOW_MENUS } from "@/data/window-menus";
 
+/** The shared prop surface every WINDOW_CONTENT entry is called with. */
+interface WindowContentProps {
+  wm: ReturnType<typeof useWindowManager>;
+  id: string;
+  /** The live, theme-filtered desktop icon list — see MyComputer.tsx for why it needs this. */
+  icons: DesktopIconConfig[];
+}
+
 /**
  * Real content per window id, as each one lands in its own build step.
  * An id with no entry here still opens — Window/MenuBar chrome doesn't
  * depend on this — it just falls back to the generic placeholder body
- * below. Extend this map (not Desktop's JSX) as ProjectExplorer,
- * SystemProperties, ResumeViewer, and EmailClient get built. Every
- * entry takes `wm` — ThExplorer/ThTerminal need it to open other
- * desktop windows from inside their content (e.g. "Open Email Client").
- * Both are always registered even though only one is ever reachable
- * through a visible icon at a time — see lib/activeDesktopIcons.ts.
+ * below. Extend this map (not Desktop's JSX) as ProjectExplorer and
+ * ResumeViewer get built. Every entry takes the shared
+ * {wm, id, icons} — most ignore most of it (structurally fine, a
+ * component can decline props it doesn't need), but `id` (MailMe
+ * closing itself) and `icons` (MyComputer's Desktop node) are each
+ * needed by more than one entry, so it's simpler to share the whole
+ * surface than special-case each.
+ *
+ * secure_vault isn't in this map — it needs `isUnlocked`/`onUnlock`
+ * beyond even this shared contract, so it's special-cased directly in
+ * the render loop below instead of forcing that extra surface onto
+ * every other entry here.
  */
-const WINDOW_CONTENT: Record<string, ComponentType<{ wm: ReturnType<typeof useWindowManager> }>> = {
+const WINDOW_CONTENT: Record<string, ComponentType<WindowContentProps>> = {
   thexplorer: ThExplorer,
   thterminal: ThTerminal,
+  "system-properties": SystemProperties,
+  contact: MailMe,
+  "my-computer": MyComputer,
 };
 
 export interface DesktopProps {
@@ -88,6 +109,14 @@ function anchorStyle(icon: DesktopIconConfig): CSSProperties {
  */
 export function Desktop({ wm, icons, className }: DesktopProps) {
   const visibleWindows = wm.windows.filter((w) => !w.isMinimized);
+  // Lifted above secure_vault's own window — a window's content
+  // subtree unmounts on both minimize AND close (see Window/Desktop's
+  // AnimatePresence + closeWindow), which would otherwise replay the
+  // decrypt animation on every reopen. Living here instead makes it
+  // survive for as long as Desktop itself does — i.e. the whole login
+  // session, resetting only on the next boot/login, same "session"
+  // semantics as everything else that avoids localStorage in this app.
+  const [isVaultUnlocked, setIsVaultUnlocked] = useState(false);
 
   return (
     <div
@@ -106,7 +135,11 @@ export function Desktop({ wm, icons, className }: DesktopProps) {
         <DesktopIcon
           key={icon.id}
           label={icon.label}
-          icon={icon.icon}
+          icon={
+            icon.id === "secure-vault" && isVaultUnlocked
+              ? "/icons/vault-unlocked.svg"
+              : icon.icon
+          }
           style={anchorStyle(icon)}
           onOpen={() => openDesktopWindow(wm, icon)}
         />
@@ -143,11 +176,21 @@ export function Desktop({ wm, icons, className }: DesktopProps) {
               ) : undefined
             }
           >
-            <WindowContent
-              id={w.id}
-              wm={wm}
-              description={icons.find((i) => i.id === w.id)?.description}
-            />
+            {w.id === "secure-vault" ? (
+              <SecureVault
+                id={w.id}
+                wm={wm}
+                isUnlocked={isVaultUnlocked}
+                onUnlock={() => setIsVaultUnlocked(true)}
+              />
+            ) : (
+              <WindowContent
+                id={w.id}
+                wm={wm}
+                icons={icons}
+                description={icons.find((i) => i.id === w.id)?.description}
+              />
+            )}
           </Window>
         ))}
       </AnimatePresence>
@@ -164,14 +207,11 @@ export function Desktop({ wm, icons, className }: DesktopProps) {
 function WindowContent({
   id,
   wm,
+  icons,
   description,
-}: {
-  id: string;
-  wm: ReturnType<typeof useWindowManager>;
-  description?: string;
-}) {
+}: WindowContentProps & { description?: string }) {
   const Content = WINDOW_CONTENT[id];
-  if (Content) return <Content wm={wm} />;
+  if (Content) return <Content wm={wm} id={id} icons={icons} />;
 
   return (
     <p style={{ fontFamily: "var(--thos-content-font, var(--font-ui))" }}>

@@ -1,21 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TerminalOutput, type TerminalHistoryEntry } from "./TerminalOutput";
 import { TerminalInput } from "./TerminalInput";
 import { TERMINAL_COMMANDS } from "@/data/terminal-commands";
 import { resolveCommand } from "@/lib/terminalCommands";
-import { openDesktopWindow } from "@/lib/openDesktopWindow";
-import type { useWindowManager } from "@/hooks/useWindowManager";
-import type { DesktopIconConfig } from "@/types/desktop";
-import desktopIconsData from "@/data/desktop-config.json";
-
-const ALL_ICONS = desktopIconsData as DesktopIconConfig[];
-
-export interface ThTerminalProps {
-  /** Needed for CTA buttons like "Open in File Explorer" — opens a real desktop window. */
-  wm: ReturnType<typeof useWindowManager>;
-}
 
 const HELP_OUTPUT = [
   "  Available commands:",
@@ -29,7 +18,14 @@ const HELP_OUTPUT = [
  * "discover things about Thea" concept, through CLI commands instead
  * of a search engine. No menu bar per spec (classic Command Prompt
  * didn't have one — same reasoning System Properties has none, see
- * data/window-menus.ts).
+ * data/window-menus.ts). Output is plain text only — no buttons or
+ * other interactive UI inside the scrollback, a real command prompt
+ * doesn't have those.
+ *
+ * TerminalOutput and the live TerminalInput render inside one shared
+ * scrollable container (not TerminalInput pinned separately below it)
+ * so the input prompt is the last line of the same continuous flow —
+ * exactly like a real terminal, not a fixed toolbar element.
  *
  * Unlike thExplorer's deliberate "chrome is themed, page content is
  * fixed" split, there's nothing to split here — a real black-background
@@ -37,10 +33,23 @@ const HELP_OUTPUT = [
  * this renders the same regardless of which theme is active (thTerminal
  * only ever appears on sec in practice, since Desktop only shows one of
  * thExplorer/thTerminal at a time — see lib/activeDesktopIcons.ts).
+ *
+ * Takes no props — Desktop.tsx's WINDOW_CONTENT map calls every entry
+ * uniformly as `<Content wm={wm} />` (ThExplorer's entry still needs
+ * `wm`), and a component that simply declares no parameters is still a
+ * valid target for that call; ThTerminal just ignores the extra arg.
  */
-export function ThTerminal({ wm }: ThTerminalProps) {
+export function ThTerminal() {
   const [history, setHistory] = useState<TerminalHistoryEntry[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Direct DOM scroll, not React state — keeps the live input line
+    // (the last thing in this flow) in view whenever the scrollback
+    // grows, same as a real terminal auto-following new output.
+    bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [history]);
 
   const runCommand = (raw: string) => {
     const trimmed = raw.trim();
@@ -75,45 +84,19 @@ export function ThTerminal({ wm }: ThTerminalProps) {
     }
   };
 
-  // The most recently run command's actions (if any) render as real
-  // buttons below the scrollback — same CTA mechanism as AskTh's
-  // content pages, just surfaced differently since terminal output is
-  // otherwise plain text.
-  const lastCommand = history.length > 0 ? resolveCommand(history[history.length - 1].command) : undefined;
-
   return (
     <div
-      className="flex h-full flex-col overflow-hidden p-2"
+      className="flex h-full flex-col overflow-hidden"
       style={{ background: "#0c0c0c", color: "#33ff33", fontFamily: "var(--font-terminal)", fontSize: 14 }}
     >
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto p-2">
         <TerminalOutput history={history} />
+        {/* Not autoFocus — same reasoning as AskThHomepage's SearchBar:
+            auto-focusing on mount would permanently suppress the idle
+            command-hint animation before a visitor ever saw it. */}
+        <TerminalInput commandHistory={commandHistory} onSubmit={runCommand} />
+        <div ref={bottomRef} />
       </div>
-
-      {lastCommand?.actions?.length ? (
-        <div className="flex flex-wrap gap-2 py-1">
-          {lastCommand.actions.map((action) => {
-            const icon = ALL_ICONS.find((i) => i.id === action.openWindowId);
-            if (!icon) return null;
-            return (
-              <button
-                key={action.openWindowId}
-                type="button"
-                onClick={() => openDesktopWindow(wm, icon)}
-                className="text-[13px]"
-                style={{ fontFamily: "var(--font-ui)" }}
-              >
-                {action.label}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
-
-      {/* Not autoFocus — same reasoning as AskThHomepage's SearchBar:
-          auto-focusing on mount would permanently suppress the idle
-          command-hint animation before a visitor ever saw it. */}
-      <TerminalInput commandHistory={commandHistory} onSubmit={runCommand} />
     </div>
   );
 }

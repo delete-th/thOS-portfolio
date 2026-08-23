@@ -1,0 +1,11 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <!-- Dark folder, same silhouette as the standard folder icon, recolored
+       for the sec theme's vault -->
+  <path d="M2 6a1 1 0 0 1 1-1h6l2 2h10a1 1 0 0 1 1 1v1H2z" fill="#2b3a2f" stroke="#0a140c" stroke-width="1"/>
+  <path d="M2 8h20v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z" fill="#3a4d3f" stroke="#0a140c" stroke-width="1"/>
+
+  <!-- Padlock badge, closed shackle -->
+  <rect x="13" y="13" width="8" height="7" fill="#c0c0c0" stroke="#000000" stroke-width="0.5"/>
+  <path d="M15 13v-2a2 2 0 0 1 4 0v2" fill="none" stroke="#000000" stroke-width="1.4"/>
+  <rect x="16.2" y="15.5" width="1.6" height="2.5" fill="#000000"/>
+</svg>

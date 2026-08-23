@@ -11,6 +11,23 @@ import type { CSSProperties } from "react";
 export const TASKBAR_SURFACE = "var(--thos-taskbar-bg)";
 
 /**
+ * 98.css renders default button text via `color: transparent` +
+ * `text-shadow: 0 0 var(--text-color)` (a crisp-text trick, and also
+ * what lets its `:active` state shift the shadow 1px for a "pressed"
+ * look) — `--text-color` is one of 98.css's own core tokens, fixed at
+ * #222222 regardless of theme. That reads fine against dev's light
+ * beige taskbar but is invisible against sec's near-black one. Spread
+ * this onto the Start button / taskbar window buttons to render their
+ * text as a normal solid color instead, themed via --thos-taskbar-fg —
+ * they already show "active" via a sunken box-shadow, not the text
+ * shift, so trading that trick away costs nothing here.
+ */
+export const TASKBAR_TEXT_STYLE: CSSProperties = {
+  color: "var(--thos-taskbar-fg)",
+  textShadow: "none",
+};
+
+/**
  * Fully opaque Win98 popup-panel chrome — no transparency/blur, outer
  * 2px raised border + inset highlight/shadow for the double-bevel
  * look. Shared by every floating panel (Start menu, its Programs

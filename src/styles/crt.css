@@ -10,7 +10,10 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 999;
+  /* Above FullscreenToggle's 99998 (see FullscreenToggle.tsx) so the
+     scanline/vignette effect still reads over that icon too — pointer
+     events pass through regardless, so this is purely visual layering. */
+  z-index: 99999;
   overflow: hidden;
 }
 

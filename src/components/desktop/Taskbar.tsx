@@ -6,7 +6,7 @@ import { StartMenu } from "./StartMenu";
 import { SystemTray } from "./SystemTray";
 import type { useWindowManager } from "@/hooks/useWindowManager";
 import type { ThemeName } from "@/hooks/useTheme";
-import { TASKBAR_SURFACE } from "@/lib/win98Panel";
+import { TASKBAR_SURFACE, TASKBAR_TEXT_STYLE } from "@/lib/win98Panel";
 
 const DIVIDER_STYLE = {
   boxShadow: "var(--border-sunken-outer), var(--border-sunken-inner)",
@@ -100,7 +100,11 @@ export function Taskbar({ wm, theme, onShutDown, className }: TaskbarProps) {
               onClick={() => handleWindowButtonClick(w.id)}
               aria-pressed={isActive}
               className="flex h-[22px] min-w-0 max-w-[200px] flex-1 items-center gap-1.5 overflow-hidden px-2 text-left text-[13px]"
-              style={{ backgroundColor: TASKBAR_SURFACE, ...(isActive ? DIVIDER_STYLE : null) }}
+              style={{
+                backgroundColor: TASKBAR_SURFACE,
+                ...TASKBAR_TEXT_STYLE,
+                ...(isActive ? DIVIDER_STYLE : null),
+              }}
             >
               {w.icon ? (
                 // eslint-disable-next-line @next/next/no-img-element -- fixed-size UI chrome icon

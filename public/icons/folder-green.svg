@@ -1,0 +1,6 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <!-- Same silhouette as the standard folder icon, recolored terminal-green
+       for the vault's unlocked file listing -->
+  <path d="M2 6a1 1 0 0 1 1-1h6l2 2h10a1 1 0 0 1 1 1v1H2z" fill="#0d8a1e" stroke="#003300" stroke-width="1"/>
+  <path d="M2 8h20v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z" fill="#12b82a" stroke="#003300" stroke-width="1"/>
+</svg>

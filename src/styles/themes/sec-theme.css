@@ -21,6 +21,7 @@
 
   /* Taskbar / Start button / taskbar window buttons */
   --thos-taskbar-bg: #111111;
+  --thos-taskbar-fg: #ffffff;
   /* Start menu panel + every menu-bar dropdown */
   --thos-panel-bg: #1a1a1a;
   --thos-panel-fg: #00ff00;

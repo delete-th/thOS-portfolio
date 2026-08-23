@@ -30,8 +30,7 @@ export const TERMINAL_COMMANDS: TerminalCommand[] = [
   06/10/2024    <DIR>    project-three
   08/01/2024    <DIR>    thos-portfolio
 
-  [Placeholder project listing — links to project windows]`,
-    actions: [{ label: "Open in File Explorer", openWindowId: "projects" }],
+  [Placeholder project listing]`,
   },
   {
     command: "cat skills.txt",
@@ -43,7 +42,6 @@ export const TERMINAL_COMMANDS: TerminalCommand[] = [
   Frameworks:   [placeholder]
   Security:     [placeholder]
   Tools:        [placeholder]`,
-    actions: [{ label: "Open System Properties", openWindowId: "system-properties" }],
   },
   {
     command: "history",
@@ -65,7 +63,6 @@ export const TERMINAL_COMMANDS: TerminalCommand[] = [
       Email:      [placeholder]
       GitHub:     [placeholder]
       LinkedIn:   [placeholder]`,
-    actions: [{ label: "Open Email Client", openWindowId: "contact" }],
   },
   {
     command: "ping thea.dev",

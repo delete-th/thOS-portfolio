@@ -25,7 +25,7 @@ const PROFILES: ProfileOption[] = [
     theme: "sec",
     username: "delete-th_sec",
     subtitle: "Security Engineering",
-    icon: "/icons/user-sec.png",
+    icon: "/icons/bug-sec.svg",
   },
 ];
 
@@ -80,6 +80,16 @@ export function LoginScreen({ onSelectProfile }: LoginScreenProps) {
                 width={48}
                 height={48}
                 className="transition-transform group-hover:scale-110"
+                style={
+                  // Sec's icon is a flat green glyph on transparent, not a
+                  // shaded raster like dev's — the glow is what keeps it
+                  // from reading as flat/thin against dev's fuller icon.
+                  // (image-rendering: pixelated is already covered by the
+                  // blanket img[src^="/icons/"] rule in globals.css.)
+                  profile.theme === "sec"
+                    ? { filter: "drop-shadow(0 0 3px rgba(0, 255, 0, 0.4))" }
+                    : undefined
+                }
               />
               <div className="flex flex-col">
                 <span

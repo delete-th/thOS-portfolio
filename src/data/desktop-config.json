@@ -1,11 +1,26 @@
 [
   {
+    "id": "my-computer",
+    "label": "My Computer",
+    "icon": "/icons/my-computer.png",
+    "anchor": "top-left",
+    "offsetX": 32,
+    "offsetY": 32,
+    "description": "Browse thOS's file system.",
+    "window": {
+      "title": "My Computer",
+      "size": { "width": 640, "height": 460 },
+      "minWidth": 460,
+      "minHeight": 320
+    }
+  },
+  {
     "id": "thexplorer",
     "label": "thExplorer",
     "icon": "/icons/thexplorer.png",
     "anchor": "top-left",
     "offsetX": 32,
-    "offsetY": 32,
+    "offsetY": 140,
     "description": "Search AskTh to learn about Thea.",
     "window": {
       "title": "thExplorer - AskTh",
@@ -20,7 +35,7 @@
     "icon": "/icons/thterminal.png",
     "anchor": "top-left",
     "offsetX": 32,
-    "offsetY": 32,
+    "offsetY": 140,
     "description": "Run commands to learn about Thea.",
     "window": {
       "title": "thTerminal - C:\\WINDOWS\\system32\\cmd.exe",
@@ -35,10 +50,25 @@
     "icon": "/icons/folder.png",
     "anchor": "top-left",
     "offsetX": 30,
-    "offsetY": 138,
+    "offsetY": 248,
     "description": "This will be the Projects file explorer once the ProjectExplorer component lands.",
     "window": {
       "title": "Projects",
+      "size": { "width": 580, "height": 420 },
+      "minWidth": 380,
+      "minHeight": 260
+    }
+  },
+  {
+    "id": "secure-vault",
+    "label": "secure_vault",
+    "icon": "/icons/vault-locked.svg",
+    "anchor": "top-left",
+    "offsetX": 30,
+    "offsetY": 248,
+    "description": "Locked. Decrypt to view Thea's projects.",
+    "window": {
+      "title": "secure_vault — Authenticating...",
       "size": { "width": 580, "height": 420 },
       "minWidth": 380,
       "minHeight": 260
@@ -50,13 +80,13 @@
     "icon": "/icons/computer.png",
     "anchor": "top-left",
     "offsetX": 34,
-    "offsetY": 252,
-    "description": "This will be the Skills / Tech Stack System Properties dialog once that component lands.",
+    "offsetY": 356,
+    "description": "thOS version info, tech stack, and asset credits.",
     "window": {
       "title": "System Properties",
-      "size": { "width": 460, "height": 380 },
-      "minWidth": 340,
-      "minHeight": 280
+      "size": { "width": 460, "height": 420 },
+      "minWidth": 360,
+      "minHeight": 320
     }
   },
   {
@@ -65,7 +95,7 @@
     "icon": "/icons/document.png",
     "anchor": "top-left",
     "offsetX": 31,
-    "offsetY": 353,
+    "offsetY": 464,
     "description": "This will be the Resume viewer once the ResumeViewer component lands.",
     "window": {
       "title": "resume.pdf",
@@ -76,17 +106,17 @@
   },
   {
     "id": "contact",
-    "label": "email_client.exe",
+    "label": "MailMe",
     "icon": "/icons/mail.png",
     "anchor": "top-left",
     "offsetX": 33,
-    "offsetY": 468,
-    "description": "This will be the Contact email client once the EmailClient component lands.",
+    "offsetY": 572,
+    "description": "Send Thea a message.",
     "window": {
-      "title": "New Message - email_client.exe",
-      "size": { "width": 480, "height": 380 },
-      "minWidth": 340,
-      "minHeight": 280
+      "title": "MailMe",
+      "size": { "width": 480, "height": 420 },
+      "minWidth": 360,
+      "minHeight": 320
     }
   },
   {

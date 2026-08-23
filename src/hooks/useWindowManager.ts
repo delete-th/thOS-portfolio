@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { WindowPosition, WindowSize, WindowState } from "@/types/window";
 
 export interface OpenWindowOptions {
@@ -20,9 +20,9 @@ const CASCADE_WRAP = 6;
 
 /**
  * Owns the open-window list: z-index stacking, focus, minimize/restore,
- * maximize/restore, move, resize, open (single-instance per id — opening
- * an id that's already open focuses/restores it instead of duplicating),
- * and close.
+ * maximize/restore, move, resize, retitle, open (single-instance per id
+ * — opening an id that's already open focuses/restores it instead of
+ * duplicating), and close.
  *
  * The Window component itself stays fully controlled and stateless; this
  * hook is what turns a handful of `<Window>`s into an actual multi-window
@@ -130,6 +130,23 @@ export function useWindowManager() {
     );
   }, []);
 
+  const setWindowTitle = useCallback((id: string, title: string) => {
+    setWindows((prev) => {
+      const target = prev.find((w) => w.id === id);
+      // Bail out with the *same* array reference when the title's
+      // already correct — not just an optimization: `wm`'s own memo
+      // (below) depends on `windows`, so a caller whose effect depends
+      // on `wm` and unconditionally calls setWindowTitle on every
+      // render (see SecureVault.tsx) would otherwise loop forever —
+      // new windows array -> new `wm` -> effect refires -> new windows
+      // array... React only skips the re-render when a state updater
+      // returns the exact previous reference, which requires this
+      // check to happen here, not in the caller.
+      if (!target || target.title === title) return prev;
+      return prev.map((w) => (w.id === id ? { ...w, title } : w));
+    });
+  }, []);
+
   const moveWindow = useCallback((id: string, position: WindowPosition) => {
     setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, position } : w)));
   }, []);
@@ -143,15 +160,36 @@ export function useWindowManager() {
     [],
   );
 
-  return {
-    windows,
-    openWindow,
-    closeWindow,
-    focusWindow,
-    minimizeWindow,
-    restoreWindow,
-    toggleMaximize,
-    moveWindow,
-    resizeWindow,
-  };
+  // Memoized so `wm` itself is referentially stable across renders
+  // where `windows` hasn't changed (every function above is already
+  // its own stable useCallback) — lets a consumer safely depend on
+  // e.g. `wm.setWindowTitle` in an effect without ESLint flagging a
+  // missing `wm` dependency (see SecureVault.tsx), and without that
+  // dependency actually firing on every unrelated parent re-render.
+  return useMemo(
+    () => ({
+      windows,
+      openWindow,
+      closeWindow,
+      focusWindow,
+      minimizeWindow,
+      restoreWindow,
+      toggleMaximize,
+      moveWindow,
+      resizeWindow,
+      setWindowTitle,
+    }),
+    [
+      windows,
+      openWindow,
+      closeWindow,
+      focusWindow,
+      minimizeWindow,
+      restoreWindow,
+      toggleMaximize,
+      moveWindow,
+      resizeWindow,
+      setWindowTitle,
+    ],
+  );
 }
