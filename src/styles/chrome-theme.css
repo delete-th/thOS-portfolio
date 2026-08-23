@@ -72,6 +72,21 @@
   background-color: var(--thos-field-bg);
 }
 
+/* Same fixed-dark button-text trick as TASKBAR_TEXT_STYLE in
+   lib/win98Panel.ts, found here too — Start menu items and MenuBar's
+   top bar / dropdown items are all plain 98.css buttons sitting on a
+   --thos-panel-bg surface, invisible against sec's dark one the same
+   way the taskbar was. Can't spread a style object onto an unknown
+   number of descendant buttons, so this is a CSS rule instead, keyed
+   off the OPAQUE_PANEL_CLASS marker (see win98Panel.ts) rather than
+   guessing every consuming component's own class names. Excludes
+   :disabled — those already get their own correct dim color via
+   Tailwind's arbitrary-value class at each call site. */
+[data-thos-theme] .opaque-panel button:not(:disabled) {
+  color: var(--thos-panel-fg);
+  text-shadow: none;
+}
+
 /* The groupbox border (fieldset's border-image, see 98-icon-fixes.css)
    is a hand-drawn grey/white bevel baked at fixed colors — authentic
    and fine on dev's light window, but reads as barely-there on sec's

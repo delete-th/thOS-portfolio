@@ -51,7 +51,7 @@
     "anchor": "top-left",
     "offsetX": 30,
     "offsetY": 248,
-    "description": "This will be the Projects file explorer once the ProjectExplorer component lands.",
+    "description": "Thea's real projects, pulled from GitHub.",
     "window": {
       "title": "Projects",
       "size": { "width": 580, "height": 420 },

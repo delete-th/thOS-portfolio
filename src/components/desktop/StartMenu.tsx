@@ -5,7 +5,7 @@ import type { useWindowManager } from "@/hooks/useWindowManager";
 import type { ThemeName } from "@/hooks/useTheme";
 import type { DesktopIconConfig } from "@/types/desktop";
 import { getActiveDesktopIcons } from "@/lib/activeDesktopIcons";
-import { OPAQUE_PANEL_STYLE } from "@/lib/win98Panel";
+import { OPAQUE_PANEL_STYLE, OPAQUE_PANEL_CLASS } from "@/lib/win98Panel";
 import { openDesktopWindow } from "@/lib/openDesktopWindow";
 
 export interface StartMenuProps {
@@ -69,7 +69,10 @@ export function StartMenu({ wm, theme, onClose, onShutDown }: StartMenuProps) {
   };
 
   return (
-    <div className="absolute bottom-full left-0 z-[500] mb-0.5 flex w-56" style={OPAQUE_PANEL_STYLE}>
+    <div
+      className={`absolute bottom-full left-0 z-[500] mb-0.5 flex w-56 ${OPAQUE_PANEL_CLASS}`}
+      style={OPAQUE_PANEL_STYLE}
+    >
       {/* The iconic vertical sidebar stripe — navy for dev, green for sec */}
       <div
         className="flex w-6 shrink-0 items-end justify-center pb-2"
@@ -122,7 +125,10 @@ export function StartMenu({ wm, theme, onClose, onShutDown }: StartMenuProps) {
           </button>
 
           {isProgramsOpen ? (
-            <div className="absolute bottom-0 left-full ml-0.5 w-52" style={OPAQUE_PANEL_STYLE}>
+            <div
+              className={`absolute bottom-0 left-full ml-0.5 w-52 ${OPAQUE_PANEL_CLASS}`}
+              style={OPAQUE_PANEL_STYLE}
+            >
               <div className="flex flex-col py-1">
                 {programIcons.map((icon) => (
                   <button

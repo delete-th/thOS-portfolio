@@ -12,6 +12,9 @@ import { SecureVault } from "@/components/windows/SecureVault";
 import { SystemProperties } from "@/components/windows/SystemProperties";
 import { MailMe } from "@/components/windows/MailMe";
 import { MyComputer } from "@/components/windows/MyComputer";
+import { ProjectExplorer } from "@/components/windows/ProjectExplorer";
+import { ProjectDetail } from "@/components/windows/ProjectDetail";
+import { getProjectById } from "@/data/projects";
 
 // react-pdf pulls in pdf.js, which touches browser-only globals
 // (DOMMatrix) at module-evaluation time — fine once mounted in the
@@ -41,18 +44,19 @@ interface WindowContentProps {
  * Real content per window id, as each one lands in its own build step.
  * An id with no entry here still opens — Window/MenuBar chrome doesn't
  * depend on this — it just falls back to the generic placeholder body
- * below. Extend this map (not Desktop's JSX) as ProjectExplorer and
- * ResumeViewer get built. Every entry takes the shared
- * {wm, id, icons} — most ignore most of it (structurally fine, a
- * component can decline props it doesn't need), but `id` (MailMe
- * closing itself) and `icons` (MyComputer's Desktop node) are each
- * needed by more than one entry, so it's simpler to share the whole
- * surface than special-case each.
+ * below. Extend this map (not Desktop's JSX) as more windows get built.
+ * Every entry takes the shared {wm, id, icons} — most ignore most of
+ * it (structurally fine, a component can decline props it doesn't
+ * need), but `id` (MailMe closing itself) and `icons` (MyComputer's
+ * Desktop node) are each needed by more than one entry, so it's
+ * simpler to share the whole surface than special-case each.
  *
- * secure_vault isn't in this map — it needs `isUnlocked`/`onUnlock`
- * beyond even this shared contract, so it's special-cased directly in
- * the render loop below instead of forcing that extra surface onto
- * every other entry here.
+ * Two ids are NOT in this map, both special-cased in WindowContent
+ * below instead: secure_vault needs `isUnlocked`/`onUnlock` beyond
+ * even this shared contract; and `project-detail-*` isn't one static
+ * id at all — it's a family (one per data/projects.ts entry), opened
+ * dynamically by ProjectExplorer/SecureVault, so it's resolved by
+ * parsing the id rather than a fixed map key.
  */
 const WINDOW_CONTENT: Record<string, ComponentType<WindowContentProps>> = {
   thexplorer: ThExplorer,
@@ -61,7 +65,10 @@ const WINDOW_CONTENT: Record<string, ComponentType<WindowContentProps>> = {
   contact: MailMe,
   "my-computer": MyComputer,
   resume: ResumeViewer,
+  projects: ProjectExplorer,
 };
+
+const PROJECT_DETAIL_PREFIX = "project-detail-";
 
 export interface DesktopProps {
   /**
@@ -223,6 +230,11 @@ function WindowContent({
   icons,
   description,
 }: WindowContentProps & { description?: string }) {
+  if (id.startsWith(PROJECT_DETAIL_PREFIX)) {
+    const project = getProjectById(id.slice(PROJECT_DETAIL_PREFIX.length));
+    if (project) return <ProjectDetail project={project} />;
+  }
+
   const Content = WINDOW_CONTENT[id];
   if (Content) return <Content wm={wm} id={id} icons={icons} />;
 

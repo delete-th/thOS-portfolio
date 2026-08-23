@@ -48,3 +48,16 @@ export const OPAQUE_PANEL_STYLE: CSSProperties = {
   borderRight: "2px solid #808080",
   boxShadow: "inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #000000",
 };
+
+/**
+ * Add this className (alongside OPAQUE_PANEL_STYLE, or any other panel
+ * using --thos-panel-bg/-fg — see MenuBar's own top bar) wherever a
+ * plain 98.css `<button>` sits directly on that panel as a text label
+ * (Start menu items, MenuBar dropdown items, ...). Same transparent-
+ * text-shadow trick as TASKBAR_TEXT_STYLE above, same fix — but this
+ * one had to be a CSS rule (chrome-theme.css's `.opaque-panel
+ * button:not(:disabled)`) instead of a spread-able style object, since
+ * it needs to reach an unknown number of descendant buttons rather
+ * than one specific element.
+ */
+export const OPAQUE_PANEL_CLASS = "opaque-panel";

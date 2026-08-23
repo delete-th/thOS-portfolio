@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { MenuAction, MenuBarMenu } from "@/types/menu";
-import { OPAQUE_PANEL_STYLE } from "@/lib/win98Panel";
+import { OPAQUE_PANEL_STYLE, OPAQUE_PANEL_CLASS } from "@/lib/win98Panel";
 
 export interface MenuBarProps {
   menus: MenuBarMenu[];
@@ -56,7 +56,7 @@ export function MenuBar({ menus, onAction }: MenuBarProps) {
   return (
     <div
       ref={rootRef}
-      className="relative flex h-6 shrink-0 items-center border-b"
+      className={`relative flex h-6 shrink-0 items-center border-b ${OPAQUE_PANEL_CLASS}`}
       style={{
         background: "var(--thos-panel-bg)",
         color: "var(--thos-panel-fg)",
@@ -79,7 +79,7 @@ export function MenuBar({ menus, onAction }: MenuBarProps) {
 
           {openIndex === index ? (
             <div
-              className="absolute left-0 top-full z-[200] min-w-[180px] py-0.5"
+              className={`absolute left-0 top-full z-[200] min-w-[180px] py-0.5 ${OPAQUE_PANEL_CLASS}`}
               style={OPAQUE_PANEL_STYLE}
             >
               {menu.items.map((item, itemIndex) =>

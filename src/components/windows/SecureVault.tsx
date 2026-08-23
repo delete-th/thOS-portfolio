@@ -3,20 +3,13 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { VaultDecryptAnimation } from "./VaultDecryptAnimation";
+import { getProjectsByTheme } from "@/data/projects";
 import type { useWindowManager } from "@/hooks/useWindowManager";
-import type { DesktopIconConfig } from "@/types/desktop";
-import desktopIconsData from "@/data/desktop-config.json";
 
-const ALL_ICONS = desktopIconsData as DesktopIconConfig[];
 const AUTHENTICATING_TITLE = "secure_vault — Authenticating...";
 const UNLOCKED_TITLE = "secure_vault — C:\\Users\\Thea\\Vault";
 
-// Same three files the decrypt animation "decrypts" — carried over here
-// (minus .enc) as a visual continuation of what the user just watched,
-// not asserted as real distinct project titles. See the description
-// line below, sourced from the real "projects" icon config, for the
-// honest "not built yet" signal.
-const DECRYPTED_FOLDERS = ["project_01", "project_02", "project_03"];
+const SEC_PROJECTS = getProjectsByTheme("sec");
 
 export interface SecureVaultProps {
   id: string;
@@ -70,7 +63,7 @@ export function SecureVault({ id, wm, isUnlocked, onUnlock }: SecureVaultProps) 
             transition={{ duration: 0.5 }}
             className="absolute inset-0"
           >
-            <VaultContents />
+            <VaultContents wm={wm} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -78,9 +71,7 @@ export function SecureVault({ id, wm, isUnlocked, onUnlock }: SecureVaultProps) 
   );
 }
 
-function VaultContents() {
-  const projectsDescription = ALL_ICONS.find((icon) => icon.id === "projects")?.description;
-
+function VaultContents({ wm }: { wm: ReturnType<typeof useWindowManager> }) {
   return (
     <div className="flex h-full flex-col gap-4 p-4" style={{ background: "#1a1a1a", color: "#33ff33" }}>
       <div
@@ -93,26 +84,44 @@ function VaultContents() {
       </div>
 
       <div className="flex flex-wrap gap-6">
-        {DECRYPTED_FOLDERS.map((name) => (
-          <div key={name} className="flex w-20 flex-col items-center gap-1">
+        {SEC_PROJECTS.map((project) => (
+          <button
+            key={project.id}
+            type="button"
+            onDoubleClick={() =>
+              wm.openWindow({
+                id: `project-detail-${project.id}`,
+                title: project.name,
+                icon: project.icon,
+                size: { width: 480, height: 460 },
+                minWidth: 360,
+                minHeight: 320,
+              })
+            }
+            className="flex w-20 min-w-0 min-h-0 flex-col items-center gap-1 border-0 bg-transparent p-1 text-center shadow-none"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size UI icon */}
             <img
-              src="/icons/folder-green.svg"
+              src={project.icon}
               alt=""
               width={40}
               height={40}
               style={{ imageRendering: "pixelated" }}
             />
-            <span className="text-center text-xs" style={{ fontFamily: "var(--font-ui)" }}>
-              {name}
+            {/* 98.css's button rule sets color:transparent + a fixed-dark
+                text-shadow (see chrome-theme.css's note on the same trick
+                elsewhere) — inherited by this span since it's un-styled,
+                invisible against the vault's near-black background unless
+                overridden explicitly. */}
+            <span
+              className="text-center text-xs"
+              style={{ fontFamily: "var(--font-ui)", color: "#33ff33", textShadow: "none" }}
+            >
+              {project.name}
             </span>
-          </div>
+          </button>
         ))}
       </div>
-
-      <p className="text-sm" style={{ fontFamily: "var(--font-ui)" }}>
-        {projectsDescription ?? "Vault contents coming soon."}
-      </p>
     </div>
   );
 }
