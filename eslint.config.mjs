@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored pdf.js worker build output (copied verbatim from
+    // pdfjs-dist for ResumeViewer — see its own comment) — minified,
+    // not authored here, not meant to be linted.
+    "public/pdf.worker.min.mjs",
+    // Scratch verification scripts/screenshots — not part of the app.
+    "scratch/**",
   ]),
 ]);
 

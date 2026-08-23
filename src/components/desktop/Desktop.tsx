@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ComponentType, type CSSProperties } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import { Window } from "./Window";
 import { DesktopIcon } from "./DesktopIcon";
@@ -11,6 +12,17 @@ import { SecureVault } from "@/components/windows/SecureVault";
 import { SystemProperties } from "@/components/windows/SystemProperties";
 import { MailMe } from "@/components/windows/MailMe";
 import { MyComputer } from "@/components/windows/MyComputer";
+
+// react-pdf pulls in pdf.js, which touches browser-only globals
+// (DOMMatrix) at module-evaluation time — fine once mounted in the
+// browser, but it crashes Next.js's server prerender pass if it's
+// ever evaluated there, which a plain static import would be even
+// though this whole tree is already "use client". ssr: false is what
+// actually keeps it out of that server pass.
+const ResumeViewer = dynamic<WindowContentProps>(
+  () => import("@/components/windows/ResumeViewer").then((m) => m.ResumeViewer),
+  { ssr: false },
+);
 import { openDesktopWindow } from "@/lib/openDesktopWindow";
 import type { useWindowManager } from "@/hooks/useWindowManager";
 import type { DesktopIconConfig } from "@/types/desktop";
@@ -48,6 +60,7 @@ const WINDOW_CONTENT: Record<string, ComponentType<WindowContentProps>> = {
   "system-properties": SystemProperties,
   contact: MailMe,
   "my-computer": MyComputer,
+  resume: ResumeViewer,
 };
 
 export interface DesktopProps {

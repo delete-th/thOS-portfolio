@@ -47,3 +47,38 @@
 [data-thos-theme] menu[role="tablist"] > li > a {
   color: var(--thos-window-fg);
 }
+
+/* 98.css hardcodes the selected tab's background (and legend's, right
+   below) to --surface — its own fixed light-gray core token, not one
+   of our --thos-* ones, so it never follows the theme. On dev that's
+   invisible (--thos-window-bg IS #c0c0c0, same value), but on sec it
+   left both stuck on light gray while the text above them switched to
+   green, landing exactly on the "green on light gray" mismatch the
+   general contrast rule rules out — not just "too dark," genuinely the
+   wrong background. Tying both to --thos-window-bg fixes that and
+   keeps the selected tab visually merged with the panel below it. */
+[data-thos-theme] menu[role="tablist"] > li[aria-selected="true"],
+[data-thos-theme] legend {
+  background-color: var(--thos-window-bg);
+}
+
+/* Same fixed-white bug as the .window-body pre rule above, for
+   <table> (SystemProperties' Tech Stack rows) — 98.css hardcodes
+   table backgrounds to #fff regardless of theme, which read as green
+   text on white this round. --thos-field-bg is the same "sunken data
+   surface" token already used for pre/sunken-panel, so this reuses it
+   rather than introducing another one. */
+[data-thos-theme] table {
+  background-color: var(--thos-field-bg);
+}
+
+/* The groupbox border (fieldset's border-image, see 98-icon-fixes.css)
+   is a hand-drawn grey/white bevel baked at fixed colors — authentic
+   and fine on dev's light window, but reads as barely-there on sec's
+   dark one. Swapping to a flat, theme-tinted border there (rather than
+   trying to recolor the bevel svg) trades the bevel for visibility,
+   which is what was asked for. */
+:root[data-thos-theme="sec"] fieldset {
+  border: 1px solid rgba(51, 255, 51, 0.3);
+  border-image: none;
+}
