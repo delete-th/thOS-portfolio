@@ -9,40 +9,48 @@ import type { MenuBarMenu } from "@/types/menu";
  * OK/Cancel/Apply.
  */
 export const WINDOW_MENUS: Record<string, MenuBarMenu[]> = {
-  about: [
+  // Back/Forward/Home *do* work, but only from ThExplorerNavBar's own
+  // toolbar buttons — these menu entries stay decorative like every
+  // other menu bar in the app, per spec ("All decorative/non-functional
+  // except Close").
+  thexplorer: [
     {
       label: "File",
       items: [
-        { type: "action", label: "New", disabled: true },
-        { type: "action", label: "Open...", disabled: true },
-        { type: "action", label: "Save", disabled: true },
-        { type: "action", label: "Save As...", disabled: true },
+        { type: "action", label: "New Window", disabled: true },
         { type: "separator" },
-        { type: "action", label: "Page Setup...", disabled: true },
         { type: "action", label: "Print", shortcut: "Ctrl+P", disabled: true },
         { type: "separator" },
-        { type: "action", label: "Exit", closesWindow: true },
+        { type: "action", label: "Close", closesWindow: true },
       ],
     },
     {
       label: "Edit",
       items: [
-        { type: "action", label: "Undo", shortcut: "Ctrl+Z", disabled: true },
-        { type: "separator" },
         { type: "action", label: "Cut", shortcut: "Ctrl+X", disabled: true },
         { type: "action", label: "Copy", shortcut: "Ctrl+C", disabled: true },
         { type: "action", label: "Paste", shortcut: "Ctrl+V", disabled: true },
-        { type: "action", label: "Delete", shortcut: "Del", disabled: true },
         { type: "separator" },
         { type: "action", label: "Select All", shortcut: "Ctrl+A", disabled: true },
-        { type: "action", label: "Time/Date", shortcut: "F5", disabled: true },
       ],
     },
     {
-      label: "Search",
+      label: "View",
       items: [
-        { type: "action", label: "Find...", shortcut: "Ctrl+F", disabled: true },
-        { type: "action", label: "Find Next", shortcut: "F3", disabled: true },
+        { type: "action", label: "Toolbar", disabled: true },
+        { type: "action", label: "Status Bar", disabled: true },
+        { type: "separator" },
+        { type: "action", label: "Text Size", hasSubmenu: true, disabled: true },
+        { type: "separator" },
+        { type: "action", label: "Source", disabled: true },
+      ],
+    },
+    {
+      label: "Go",
+      items: [
+        { type: "action", label: "Back", disabled: true },
+        { type: "action", label: "Forward", disabled: true },
+        { type: "action", label: "Home Page", disabled: true },
       ],
     },
     {
@@ -50,7 +58,7 @@ export const WINDOW_MENUS: Record<string, MenuBarMenu[]> = {
       items: [
         { type: "action", label: "Help Topics", disabled: true },
         { type: "separator" },
-        { type: "action", label: "About Notepad", disabled: true },
+        { type: "action", label: "About thExplorer", disabled: true },
       ],
     },
   ],

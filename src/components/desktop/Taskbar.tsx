@@ -5,6 +5,7 @@ import { StartButton } from "./StartButton";
 import { StartMenu } from "./StartMenu";
 import { SystemTray } from "./SystemTray";
 import type { useWindowManager } from "@/hooks/useWindowManager";
+import type { ThemeName } from "@/hooks/useTheme";
 import { TASKBAR_SURFACE } from "@/lib/win98Panel";
 
 const DIVIDER_STYLE = {
@@ -14,6 +15,8 @@ const DIVIDER_STYLE = {
 export interface TaskbarProps {
   /** Shared with Desktop so window buttons stay in sync with what's open. */
   wm: ReturnType<typeof useWindowManager>;
+  /** Forwarded to StartMenu — which of thExplorer/thTerminal it lists. */
+  theme: ThemeName;
   /** Wired to the Start menu's "Shut Down" item. */
   onShutDown: () => void;
   className?: string;
@@ -26,7 +29,7 @@ export interface TaskbarProps {
  * desktop icons and are now also reachable via the Start menu's
  * Programs submenu.
  */
-export function Taskbar({ wm, onShutDown, className }: TaskbarProps) {
+export function Taskbar({ wm, theme, onShutDown, className }: TaskbarProps) {
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
   // Wraps *both* the Start button and the menu, so a click on the
   // button itself counts as "inside" — otherwise the outside-click
@@ -78,6 +81,7 @@ export function Taskbar({ wm, onShutDown, className }: TaskbarProps) {
         {isStartMenuOpen ? (
           <StartMenu
             wm={wm}
+            theme={theme}
             onClose={() => setIsStartMenuOpen(false)}
             onShutDown={onShutDown}
           />

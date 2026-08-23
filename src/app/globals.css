@@ -21,6 +21,17 @@
    everywhere) bundled font-face declarations too, which is harmless. */
 @import "98.css/style.css" layer(base);
 
+/* Restores every icon/glyph 98.css's own build normally resolves via a
+   custom svg-load() PostCSS function, which style.css alone (imported
+   above, not run through 98.css's build) leaves as literal invalid
+   CSS — title bar minimize/maximize/close glyphs, checkboxes, radio
+   buttons, scrollbar buttons, and more all silently vanish without
+   this. Generated from 98.css's own icon/*.svg files — see the
+   comment at the top of that file for how to regenerate it. Also
+   `layer(base)`, imported right after 98.css for the same reasoning
+   as everything else in this block. */
+@import "../styles/98-icon-fixes.css" layer(base);
+
 @import "../styles/fonts.css";
 @import "../styles/themes/dev-theme.css";
 @import "../styles/themes/sec-theme.css";
@@ -96,4 +107,21 @@ img[src^="/icons/"] {
 :focus-visible {
   outline: 1px dotted var(--text-color, #000000);
   outline-offset: 1px;
+}
+
+/* Classic caret blink rate (~530ms on/off) for the animated typing-hint
+   cursors — AskTh's search bar (SearchBar.tsx) and thTerminal's
+   command hints (TerminalTypingHint.tsx) both use this. */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink-cursor {
+  animation: blink 1.06s step-end infinite;
 }

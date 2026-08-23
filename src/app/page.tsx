@@ -10,8 +10,10 @@ import { BootSequence } from "@/components/boot/BootSequence";
 import { LoginScreen } from "@/components/login/LoginScreen";
 import { Desktop } from "@/components/desktop/Desktop";
 import { Taskbar } from "@/components/desktop/Taskbar";
+import { FullscreenTooltip } from "@/components/ui/FullscreenTooltip";
 import { useWindowManager } from "@/hooks/useWindowManager";
 import { useTheme, type ThemeName } from "@/hooks/useTheme";
+import { getActiveDesktopIcons } from "@/lib/activeDesktopIcons";
 
 type Phase = "boot" | "login" | "welcome" | "desktop" | "shutdown";
 
@@ -24,6 +26,10 @@ export default function Home() {
   const [phase, setPhase] = useState<Phase>("boot");
   const wm = useWindowManager();
   const { theme, setTheme } = useTheme("dev");
+  // Shown once when the desktop first appears each boot — no
+  // localStorage per spec; a reload (Shut Down) is a fresh "session"
+  // and shows it again, same reasoning the boot sequence itself uses.
+  const [showFullscreenTip, setShowFullscreenTip] = useState(true);
 
   const handleSelectProfile = (selected: ThemeName) => {
     setTheme(selected);
@@ -69,8 +75,11 @@ export default function Home() {
 
   return (
     <main className="flex flex-1 flex-col">
-      <Desktop wm={wm} className="flex-1" />
-      <Taskbar wm={wm} onShutDown={handleShutDown} />
+      <Desktop wm={wm} icons={getActiveDesktopIcons(theme)} className="flex-1" />
+      <Taskbar wm={wm} theme={theme} onShutDown={handleShutDown} />
+      {showFullscreenTip ? (
+        <FullscreenTooltip onDismiss={() => setShowFullscreenTip(false)} />
+      ) : null}
     </main>
   );
 }

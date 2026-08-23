@@ -30,3 +30,12 @@
 [data-thos-theme] .title-bar-text {
   color: var(--thos-titlebar-fg);
 }
+
+/* 98.css's own `pre` rule hardcodes a white sunken-field background
+   (var(--button-highlight)) regardless of theme — fine for dev (that's
+   the authentic Notepad look, and happens to match), wrong for sec
+   (white behind green text). Text color needs no rule here: `color`
+   already inherits from .window-body's --thos-window-fg above. */
+[data-thos-theme] .window-body pre {
+  background: var(--thos-field-bg);
+}

@@ -1,22 +1,19 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import type { useWindowManager } from "@/hooks/useWindowManager";
+import { useFullscreen } from "@/hooks/useFullscreen";
+import type { ThemeName } from "@/hooks/useTheme";
 import type { DesktopIconConfig } from "@/types/desktop";
-import desktopIconsData from "@/data/desktop-config.json";
+import { getActiveDesktopIcons } from "@/lib/activeDesktopIcons";
 import { OPAQUE_PANEL_STYLE } from "@/lib/win98Panel";
-
-const ALL_ICONS = desktopIconsData as DesktopIconConfig[];
-const DOCUMENTS_ICON = ALL_ICONS.find((icon) => icon.id === "projects");
-// Everything openable except Projects (promoted to "Documents") and the
-// Recycle Bin (not a program).
-const PROGRAM_ICONS = ALL_ICONS.filter(
-  (icon) => icon.id !== "projects" && icon.id !== "recycle-bin",
-);
+import { openDesktopWindow } from "@/lib/openDesktopWindow";
 
 export interface StartMenuProps {
   /** Shared with Desktop/Taskbar so opening an item here behaves identically. */
   wm: ReturnType<typeof useWindowManager>;
+  /** Which of thExplorer/thTerminal shows in Programs — see activeDesktopIcons.ts. */
+  theme: ThemeName;
   onClose: () => void;
   onShutDown: () => void;
 }
@@ -28,25 +25,27 @@ const ITEM_TEXT_STYLE: CSSProperties = { fontFamily: "var(--font-ui)", fontSize:
 
 /**
  * Classic Windows 98 Start menu: navy "thOS" sidebar, Documents /
- * Settings / Programs (click-to-expand submenu, not hover) / Shut
- * Down. Closes on outside click or Escape — handled by the parent
- * Taskbar (which owns the open/closed state and wraps both the Start
- * button and this menu in one click-outside boundary; see Taskbar.tsx).
- * This was explicitly deferred to "Future Enhancements" in the
- * original spec, now built per direct request.
+ * Settings / Programs (click-to-expand submenu, not hover) / Full
+ * Screen / Shut Down. Closes on outside click or Escape — handled by
+ * the parent Taskbar (which owns the open/closed state and wraps both
+ * the Start button and this menu in one click-outside boundary; see
+ * Taskbar.tsx). This was explicitly deferred to "Future Enhancements"
+ * in the original spec, now built per direct request.
  */
-export function StartMenu({ wm, onClose, onShutDown }: StartMenuProps) {
+export function StartMenu({ wm, theme, onClose, onShutDown }: StartMenuProps) {
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
+
+  const icons = useMemo(() => getActiveDesktopIcons(theme), [theme]);
+  const documentsIcon = icons.find((icon) => icon.id === "projects");
+  // Everything openable except Projects (promoted to "Documents") and
+  // the Recycle Bin (not a program).
+  const programIcons = icons.filter(
+    (icon) => icon.id !== "projects" && icon.id !== "recycle-bin",
+  );
 
   const openAndClose = (icon: DesktopIconConfig) => {
-    wm.openWindow({
-      id: icon.id,
-      title: icon.window.title,
-      icon: icon.icon,
-      size: icon.window.size,
-      minWidth: icon.window.minWidth,
-      minHeight: icon.window.minHeight,
-    });
+    openDesktopWindow(wm, icon);
     onClose();
   };
 
@@ -82,14 +81,14 @@ export function StartMenu({ wm, onClose, onShutDown }: StartMenuProps) {
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col py-1">
-        {DOCUMENTS_ICON ? (
+        {documentsIcon ? (
           <button
             type="button"
             className={MENU_ITEM_CLASS}
-            onClick={() => openAndClose(DOCUMENTS_ICON)}
+            onClick={() => openAndClose(documentsIcon)}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size UI icon */}
-            <img src={DOCUMENTS_ICON.icon} alt="" width={16} height={16} />
+            <img src={documentsIcon.icon} alt="" width={16} height={16} />
             <span style={ITEM_TEXT_STYLE}>Documents</span>
           </button>
         ) : null}
@@ -118,7 +117,7 @@ export function StartMenu({ wm, onClose, onShutDown }: StartMenuProps) {
           {isProgramsOpen ? (
             <div className="absolute bottom-0 left-full ml-0.5 w-52" style={OPAQUE_PANEL_STYLE}>
               <div className="flex flex-col py-1">
-                {PROGRAM_ICONS.map((icon) => (
+                {programIcons.map((icon) => (
                   <button
                     key={icon.id}
                     type="button"
@@ -136,6 +135,12 @@ export function StartMenu({ wm, onClose, onShutDown }: StartMenuProps) {
             </div>
           ) : null}
         </div>
+
+        <button type="button" className={MENU_ITEM_CLASS} onClick={toggleFullscreen}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size UI icon */}
+          <img src="/icons/fullscreen.svg" alt="" width={16} height={16} />
+          <span style={ITEM_TEXT_STYLE}>{isFullscreen ? "Exit Full Screen" : "Full Screen"}</span>
+        </button>
 
         <div
           className="mx-2 my-1 h-px shrink-0"

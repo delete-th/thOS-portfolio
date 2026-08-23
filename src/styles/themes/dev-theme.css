@@ -19,7 +19,7 @@
   --thos-titlebar-fg: #ffffff;
   --thos-accent: #008080;
   --thos-desktop-bg: #008080;
-  --thos-desktop-wallpaper: url("/wallpapers/library.jpg");
+  --thos-desktop-wallpaper: url("/wallpapers/day.jpg");
   --thos-content-font: var(--font-ui);
 
   /* Taskbar / Start button / taskbar window buttons */
@@ -32,4 +32,8 @@
   --thos-menu-hover-fg: #ffffff;
   /* The Start menu's vertical "thOS" sidebar stripe */
   --thos-sidebar-gradient: linear-gradient(to top, #000080, #1084d0);
+  /* Sunken text-field surfaces (Notepad-style <pre> content, future
+     textareas) — white, matching 98.css's own default so dev's look
+     is unchanged from before this token existed. */
+  --thos-field-bg: #ffffff;
 }

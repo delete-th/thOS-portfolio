@@ -16,7 +16,7 @@
   --thos-titlebar-fg: #00ff00;
   --thos-accent: #00ff00;
   --thos-desktop-bg: #0a0a0a;
-  --thos-desktop-wallpaper: url("/wallpapers/dark-matrix-pixel.png");
+  --thos-desktop-wallpaper: url("/wallpapers/city.png");
   --thos-content-font: var(--font-terminal);
 
   /* Taskbar / Start button / taskbar window buttons */
@@ -30,4 +30,9 @@
   --thos-menu-hover-fg: #000000;
   /* The Start menu's vertical "thOS" sidebar stripe */
   --thos-sidebar-gradient: linear-gradient(to top, #003300, #00aa00);
+  /* Sunken text-field surfaces (Notepad-style <pre> content, future
+     textareas) — near-black instead of 98.css's default white, so
+     green text (--thos-window-fg) reads as a proper terminal instead
+     of clashing with a bright field background. */
+  --thos-field-bg: #0d0d0d;
 }

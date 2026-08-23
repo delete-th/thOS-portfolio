@@ -1,17 +1,32 @@
 [
   {
-    "id": "about",
-    "label": "about_me.txt",
-    "icon": "/icons/notepad.png",
+    "id": "thexplorer",
+    "label": "thExplorer",
+    "icon": "/icons/thexplorer.png",
     "anchor": "top-left",
     "offsetX": 32,
     "offsetY": 32,
-    "description": "This will be the About Me notepad viewer once the AboutMe component lands.",
+    "description": "Search AskTh to learn about Thea.",
     "window": {
-      "title": "about_me.txt - Notepad",
-      "size": { "width": 480, "height": 360 },
-      "minWidth": 300,
-      "minHeight": 220
+      "title": "thExplorer - AskTh",
+      "size": { "width": 640, "height": 480 },
+      "minWidth": 420,
+      "minHeight": 360
+    }
+  },
+  {
+    "id": "thterminal",
+    "label": "thTerminal",
+    "icon": "/icons/thterminal.png",
+    "anchor": "top-left",
+    "offsetX": 32,
+    "offsetY": 32,
+    "description": "Run commands to learn about Thea.",
+    "window": {
+      "title": "thTerminal - C:\\WINDOWS\\system32\\cmd.exe",
+      "size": { "width": 620, "height": 440 },
+      "minWidth": 400,
+      "minHeight": 300
     }
   },
   {
