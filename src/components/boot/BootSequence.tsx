@@ -17,7 +17,7 @@ type Phase = "bios" | "loading";
  * useTheme.ts for the same reasoning). Any keypress or click skips
  * straight to the end, which doubles as the accessibility escape hatch
  * the spec calls for and as the user-gesture browser autoplay policies
- * require before the (not-yet-built) sound system can play anything.
+ * require before the sound system (hooks/useSound.ts) can play anything.
  */
 export function BootSequence({ onComplete }: BootSequenceProps) {
   const [phase, setPhase] = useState<Phase>("bios");

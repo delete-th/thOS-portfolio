@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
+import { useSound } from "@/hooks/useSound";
 
 // useSyncExternalStore requires getSnapshot to return the *same* value
 // between calls until the store actually changes — Date.now() changing
@@ -31,15 +32,12 @@ function getServerTime() {
 /**
  * Clock + mute toggle + a decorative network icon.
  *
- * The mute toggle is local, visual-only state for now — there's no
- * sound system to actually mute yet (that's its own later build step).
- * It's structured as isMuted/onToggleMute-shaped so wiring it to a real
- * useSound() hook later is a matter of lifting this state up, not
- * rewriting the component.
+ * The mute toggle silences every sound effect at once — the flag
+ * itself lives in lib/sound-manager.ts, see useSound().
  */
 export function SystemTray() {
   const nowMs = useSyncExternalStore(subscribeToClock, getClientTime, getServerTime);
-  const [isMuted, setIsMuted] = useState(false);
+  const { isMuted, toggleMute } = useSound();
 
   const timeLabel =
     nowMs > 0
@@ -60,7 +58,7 @@ export function SystemTray() {
     >
       <button
         type="button"
-        onClick={() => setIsMuted((muted) => !muted)}
+        onClick={toggleMute}
         aria-pressed={isMuted}
         aria-label={isMuted ? "Unmute sound effects" : "Mute sound effects"}
         title={isMuted ? "Sound: muted" : "Sound: on"}

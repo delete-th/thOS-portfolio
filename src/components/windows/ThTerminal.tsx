@@ -5,6 +5,7 @@ import { TerminalOutput, type TerminalHistoryEntry } from "./TerminalOutput";
 import { TerminalInput } from "./TerminalInput";
 import { TERMINAL_COMMANDS } from "@/data/terminal-commands";
 import { resolveCommand } from "@/lib/terminalCommands";
+import { useSound } from "@/hooks/useSound";
 
 const HELP_OUTPUT = [
   "  Available commands:",
@@ -43,6 +44,7 @@ export function ThTerminal() {
   const [history, setHistory] = useState<TerminalHistoryEntry[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { play } = useSound();
 
   useEffect(() => {
     // Direct DOM scroll, not React state — keeps the live input line
@@ -74,6 +76,7 @@ export function ThTerminal() {
     if (matched) {
       setHistory((prev) => [...prev, { command: trimmed, output: matched.output }]);
     } else {
+      play("error");
       setHistory((prev) => [
         ...prev,
         {

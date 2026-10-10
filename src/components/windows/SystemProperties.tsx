@@ -117,7 +117,8 @@ function CreditsTab() {
 
       <fieldset>
         <legend>Sound Effects</legend>
-        <p>Sound system not yet implemented.</p>
+        <p>Original 8-bit effects, synthesized for thOS</p>
+        <p>Playback — Howler.js, James Simpson (MIT)</p>
       </fieldset>
 
       <fieldset>

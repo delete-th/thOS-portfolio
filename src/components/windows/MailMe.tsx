@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { RetroMessageBox } from "@/components/ui/RetroMessageBox";
+import { useSound } from "@/hooks/useSound";
 import type { useWindowManager } from "@/hooks/useWindowManager";
 
 export interface MailMeProps {
@@ -29,14 +30,30 @@ export function MailMe({ id, wm }: MailMeProps) {
   const [body, setBody] = useState("");
   const [dialog, setDialog] = useState<"sent" | "draft-saved" | null>(null);
 
-  const handleSend = () => setDialog("sent");
+  const { play } = useSound();
+
+  const handleSend = () => {
+    play("send");
+    setDialog("sent");
+  };
   const handleSaveDraft = () => setDialog("draft-saved");
   const handleCancel = () => wm.closeWindow(id);
 
   return (
     <div className="relative flex h-full flex-col p-2" style={{ fontFamily: "var(--font-ui)" }}>
       <HeaderRow label="To:">
-        <input type="text" value={TO_ADDRESS} readOnly className="w-full opacity-70" />
+        <input
+          type="text"
+          value={TO_ADDRESS}
+          readOnly
+          className="w-full opacity-70"
+          // Beep on an attempt to edit — but not on Tab, arrows, Ctrl+C
+          // etc., which are all valid in a read-only field.
+          onKeyDown={(e) => {
+            const isEdit = e.key.length === 1 || e.key === "Backspace" || e.key === "Delete";
+            if (isEdit && !e.ctrlKey && !e.metaKey) play("error");
+          }}
+        />
       </HeaderRow>
       <HeaderRow label="From:">
         <input
