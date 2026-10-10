@@ -19,7 +19,9 @@ export function FullscreenToggle() {
       onClick={toggleFullscreen}
       aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
       title="Toggle Fullscreen (F11)"
-      className="fixed flex min-h-0 min-w-0 items-center justify-center border-0 bg-transparent p-0 shadow-none transition-opacity duration-150 hover:opacity-100"
+      // Hidden on phones — it would sit on top of the mobile layout's
+      // header, and there's no desktop there to take fullscreen.
+      className="fixed flex max-md:hidden min-h-0 min-w-0 items-center justify-center border-0 bg-transparent p-0 shadow-none transition-opacity duration-150 hover:opacity-100"
       style={{
         top: 8,
         right: 8,

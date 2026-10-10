@@ -1,0 +1,162 @@
+/*
+ * Glitch/static burst — CSS-only, same as the CRT overlay. Rendered via
+ * components/effects/GlitchEffect.tsx: a short one-shot overlay of TV
+ * static plus a few tearing bars, played on big transitions (arriving
+ * at the desktop, shutting down) and on the occasional window open.
+ *
+ * It's an overlay on top of the content rather than an animation of
+ * the content itself on purpose — windows are already transformed by
+ * Framer Motion (open/close scale) and positioned by drag/resize, and
+ * a second transform/filter animation on the same element would fight
+ * both.
+ */
+
+.glitch {
+  --glitch-duration: 320ms;
+  --glitch-jump: 18vh;
+  position: fixed;
+  inset: 0;
+  /* Under FullscreenToggle (99998) and the CRT overlay (99999), over
+     everything else — see crt.css. */
+  z-index: 99990;
+  overflow: hidden;
+  pointer-events: none;
+  /* The root only exists to time the burst: fully visible until the
+     last frame, then gone — its animationend is what GlitchEffect.tsx
+     unmounts on. */
+  animation: glitch-life var(--glitch-duration) steps(1, end) forwards;
+}
+
+/* Scoped to one window: shorter and with smaller jumps, since the same
+   burst that suits a whole-screen transition is far too much on a
+   400px dialog. */
+.glitch--window {
+  --glitch-duration: 200ms;
+  --glitch-jump: 56px;
+  position: absolute;
+  z-index: 400;
+}
+
+.glitch__static {
+  position: absolute;
+  /* Oversized so the stepped background shift below never exposes an edge. */
+  inset: -80px;
+  opacity: 0.16;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: glitch-static var(--glitch-duration) steps(1, end) forwards;
+}
+
+.glitch__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  animation: glitch-bar var(--glitch-duration) steps(1, end) forwards;
+}
+
+/* `difference` against white inverts whatever's underneath, so this
+   bar reads as a torn strip of the actual screen rather than a flat
+   stripe painted over it. */
+.glitch__bar:nth-child(2) {
+  top: 22%;
+  height: 4%;
+  background: #ffffff;
+  mix-blend-mode: difference;
+}
+
+/* Thin cyan/magenta fringes — the colour-separation half of the look. */
+.glitch__bar:nth-child(3) {
+  top: 58%;
+  height: 1.5%;
+  background: #00ffff;
+  mix-blend-mode: screen;
+  animation-name: glitch-bar-alt;
+}
+
+.glitch__bar:nth-child(4) {
+  top: 71%;
+  height: 2.5%;
+  background: #ff00ff;
+  mix-blend-mode: screen;
+}
+
+@keyframes glitch-life {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes glitch-static {
+  0% {
+    background-position: 0 0;
+  }
+  25% {
+    background-position: 37px -52px;
+  }
+  50% {
+    background-position: -61px 23px;
+  }
+  75% {
+    background-position: 18px 67px;
+  }
+}
+
+@keyframes glitch-bar {
+  0% {
+    opacity: 0.7;
+    transform: translateY(0);
+  }
+  25% {
+    opacity: 0;
+  }
+  45% {
+    opacity: 0.55;
+    transform: translateY(var(--glitch-jump));
+  }
+  65% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 0.4;
+    transform: translateY(calc(var(--glitch-jump) * -0.5));
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Same idea, offset in time and direction so the bars don't all blink
+   in unison. */
+@keyframes glitch-bar-alt {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.6;
+    transform: translateY(calc(var(--glitch-jump) * -1));
+  }
+  40% {
+    opacity: 0;
+  }
+  60% {
+    opacity: 0.5;
+    transform: translateY(calc(var(--glitch-jump) * 0.6));
+  }
+  85% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* A flashing, tearing overlay is exactly what this setting asks sites
+   not to do — and it's pure decoration, so it just doesn't play. */
+@media (prefers-reduced-motion: reduce) {
+  .glitch {
+    display: none;
+  }
+}

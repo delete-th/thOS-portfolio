@@ -16,6 +16,11 @@ const MIN_SCALE = 0.6;
 const MAX_SCALE = 2.2;
 const SCALE_STEP = 0.2;
 
+export interface ResumeViewerProps {
+  /** Starting zoom — the mobile layout opens smaller so a page fits a phone's width. */
+  initialScale?: number;
+}
+
 /**
  * resume.pdf's viewer — the "resume" window id's real content, per
  * desktop-config.json's own comment naming this as the pending piece.
@@ -31,10 +36,12 @@ const SCALE_STEP = 0.2;
  * react-pdf's TextLayer.css/AnnotationLayer.css for a feature this
  * window doesn't use.
  */
-export function ResumeViewer() {
+export function ResumeViewer({ initialScale = 1 }: ResumeViewerProps) {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(initialScale);
+  // Zooming out must never jump *up* to MIN_SCALE from a smaller start.
+  const minScale = Math.min(MIN_SCALE, initialScale);
   const [status, setStatus] = useState<"loading" | "ready" | "missing">("loading");
 
   return (
@@ -46,7 +53,7 @@ export function ResumeViewer() {
         scale={scale}
         onPrevPage={() => setPageNumber((p) => Math.max(1, p - 1))}
         onNextPage={() => setPageNumber((p) => Math.min(numPages ?? p, p + 1))}
-        onZoomOut={() => setScale((s) => Math.max(MIN_SCALE, +(s - SCALE_STEP).toFixed(2)))}
+        onZoomOut={() => setScale((s) => Math.max(minScale, +(s - SCALE_STEP).toFixed(2)))}
         onZoomIn={() => setScale((s) => Math.min(MAX_SCALE, +(s + SCALE_STEP).toFixed(2)))}
         onResetZoom={() => setScale(1)}
       />

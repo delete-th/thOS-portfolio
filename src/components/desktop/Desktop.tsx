@@ -22,8 +22,19 @@ import { getProjectById } from "@/data/projects";
 // ever evaluated there, which a plain static import would be even
 // though this whole tree is already "use client". ssr: false is what
 // actually keeps it out of that server pass.
+//
+// Wrapped rather than passed through directly: ResumeViewer's own
+// props (initialScale, for the mobile layout) share nothing with
+// WindowContentProps, which TypeScript rejects as a WINDOW_CONTENT
+// entry — a wrapper that takes no props at all is fine.
 const ResumeViewer = dynamic<WindowContentProps>(
-  () => import("@/components/windows/ResumeViewer").then((m) => m.ResumeViewer),
+  () =>
+    import("@/components/windows/ResumeViewer").then(
+      (m) =>
+        function ResumeWindow() {
+          return <m.ResumeViewer />;
+        },
+    ),
   { ssr: false },
 );
 import { openDesktopWindow } from "@/lib/openDesktopWindow";

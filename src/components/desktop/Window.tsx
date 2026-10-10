@@ -1,7 +1,8 @@
 "use client";
 
-import { type CSSProperties, type ReactNode, useMemo } from "react";
+import { type CSSProperties, type ReactNode, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { GlitchEffect } from "@/components/effects/GlitchEffect";
 import { useDraggable } from "@/hooks/useDraggable";
 import { useResizable, type ResizeDirection } from "@/hooks/useResizable";
 import type { WindowPosition, WindowSize } from "@/types/window";
@@ -47,6 +48,10 @@ const RESIZE_HANDLES: { direction: ResizeDirection; style: CSSProperties }[] = [
   { direction: "se", style: { bottom: -3, right: -3, width: 10, height: 10, cursor: "nwse-resize" } },
   { direction: "sw", style: { bottom: -3, left: -3, width: 10, height: 10, cursor: "nesw-resize" } },
 ];
+
+// Roughly one window open in seven gets a glitch burst — per the spec,
+// "occasional... for personality (not overused)".
+const GLITCH_CHANCE = 0.15;
 
 /**
  * A draggable, resizable, 98.css-styled window. Fully controlled — it
@@ -99,6 +104,11 @@ export function Window({
     minHeight,
     disabled: isMaximized,
   });
+
+  // Rolled once per mount, so it's decided when the window opens (or
+  // is restored from the taskbar — that remounts it too) and doesn't
+  // re-roll on every drag/resize re-render.
+  const [glitchOnOpen] = useState(() => Math.random() < GLITCH_CHANCE);
 
   const positionStyle: CSSProperties = useMemo(
     () =>
@@ -168,6 +178,8 @@ export function Window({
             {...getHandleProps(direction)}
           />
         ))}
+
+      {glitchOnOpen ? <GlitchEffect variant="window" /> : null}
     </motion.div>
   );
 }

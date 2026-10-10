@@ -36,6 +36,7 @@
 @import "../styles/themes/dev-theme.css";
 @import "../styles/themes/sec-theme.css";
 @import "../styles/crt.css";
+@import "../styles/glitch.css";
 
 /* Applies the theme tokens defined just above to 98.css's actual .window
    /.title-bar classes. Also `layer(base)`, imported after 98.css within

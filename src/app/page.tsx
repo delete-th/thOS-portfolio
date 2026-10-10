@@ -11,6 +11,9 @@ import { LoginScreen } from "@/components/login/LoginScreen";
 import { Desktop } from "@/components/desktop/Desktop";
 import { Taskbar } from "@/components/desktop/Taskbar";
 import { FullscreenTooltip } from "@/components/ui/FullscreenTooltip";
+import { GlitchEffect } from "@/components/effects/GlitchEffect";
+import { MobileLayout } from "@/components/mobile/MobileLayout";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { useWindowManager } from "@/hooks/useWindowManager";
 import { useTheme, type ThemeName } from "@/hooks/useTheme";
 import { useSound, useUiClickSounds, useWindowSounds } from "@/hooks/useSound";
@@ -33,6 +36,7 @@ export default function Home() {
   // and shows it again, same reasoning the boot sequence itself uses.
   const [showFullscreenTip, setShowFullscreenTip] = useState(true);
   const { play, stop } = useSound();
+  const isMobile = useIsMobile();
 
   useUiClickSounds();
   useWindowSounds(wm.windows);
@@ -73,6 +77,12 @@ export default function Home() {
     setTimeout(() => window.location.reload(), SHUTDOWN_DURATION_MS);
   };
 
+  // Phones get the same content as one scrollable page instead of the
+  // OS simulation — no boot, login, or window manager involved.
+  if (isMobile) {
+    return <MobileLayout theme={theme} onSelectTheme={setTheme} />;
+  }
+
   if (phase === "boot") {
     return <BootSequence onComplete={handleBootComplete} />;
   }
@@ -97,6 +107,7 @@ export default function Home() {
         <p style={{ fontFamily: "var(--font-terminal)", color: "#fff", fontSize: 20 }}>
           thOS is shutting down&hellip;
         </p>
+        <GlitchEffect key="shutdown" />
       </main>
     );
   }
@@ -108,6 +119,8 @@ export default function Home() {
       {showFullscreenTip ? (
         <FullscreenTooltip onDismiss={() => setShowFullscreenTip(false)} />
       ) : null}
+      {/* Plays once as the desktop appears, then unmounts itself. */}
+      <GlitchEffect key="desktop" />
     </main>
   );
 }

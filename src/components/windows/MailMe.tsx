@@ -6,8 +6,13 @@ import { useSound } from "@/hooks/useSound";
 import type { useWindowManager } from "@/hooks/useWindowManager";
 
 export interface MailMeProps {
-  id: string;
-  wm: ReturnType<typeof useWindowManager>;
+  /**
+   * The window this is rendered in, and the manager to close it with —
+   * both omitted by the mobile layout, where MailMe is a card on the
+   * page rather than a window, so there's nothing for Cancel to close.
+   */
+  id?: string;
+  wm?: ReturnType<typeof useWindowManager>;
 }
 
 const TO_ADDRESS = "thea@placeholder.com";
@@ -37,7 +42,7 @@ export function MailMe({ id, wm }: MailMeProps) {
     setDialog("sent");
   };
   const handleSaveDraft = () => setDialog("draft-saved");
-  const handleCancel = () => wm.closeWindow(id);
+  const handleCancel = wm && id ? () => wm.closeWindow(id) : null;
 
   return (
     <div className="relative flex h-full flex-col p-2" style={{ fontFamily: "var(--font-ui)" }}>
@@ -90,9 +95,11 @@ export function MailMe({ id, wm }: MailMeProps) {
         <button type="button" onClick={handleSaveDraft}>
           Save Draft
         </button>
-        <button type="button" onClick={handleCancel}>
-          Cancel
-        </button>
+        {handleCancel ? (
+          <button type="button" onClick={handleCancel}>
+            Cancel
+          </button>
+        ) : null}
       </div>
 
       {dialog === "sent" ? (
