@@ -36,6 +36,9 @@ export function useSound() {
 }
 
 const CLICKABLE_SELECTOR = "button:not(:disabled), a, [role='button']";
+// For the rare button that makes its own noises and shouldn't click as
+// well (the desktop assistant: a "click" fires when he's let go of).
+const SILENT_SELECTOR = "[data-no-click-sound]";
 
 /**
  * Plays the UI click for every button/link press, from one document
@@ -45,9 +48,9 @@ const CLICKABLE_SELECTOR = "button:not(:disabled), a, [role='button']";
 export function useUiClickSounds() {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (e.target instanceof Element && e.target.closest(CLICKABLE_SELECTOR)) {
-        playSound("click");
-      }
+      if (!(e.target instanceof Element)) return;
+      const clicked = e.target.closest(CLICKABLE_SELECTOR);
+      if (clicked && !clicked.matches(SILENT_SELECTOR)) playSound("click");
     };
     // Capture phase, so a handler that stops propagation can't silence it.
     document.addEventListener("click", onClick, true);

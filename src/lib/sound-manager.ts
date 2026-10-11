@@ -8,17 +8,29 @@ export type SoundName =
   | "minimize"
   | "error"
   | "send"
-  | "ambient";
+  | "ambient"
+  // The assistant being picked up and dropped:
+  | "pickup"
+  | "land"
+  | "dizzy";
 
 interface SoundConfig {
-  src: string;
+  /** One file, or the same sound in several formats, best first. */
+  src: string | string[];
   volume: number;
   loop?: boolean;
+  /**
+   * Cut off a copy that's still playing before starting another, so
+   * triggering it in quick succession restarts it instead of piling
+   * copies on top of each other.
+   */
+  restart?: boolean;
 }
 
 /**
- * Every sound effect in thOS. The files are synthesized by
- * scripts/generate-sounds.mjs — swapping one for a sourced recording is
+ * Every sound effect in thOS. The .wav files are synthesized by
+ * scripts/generate-sounds.mjs; the assistant's are sourced recordings
+ * (public/sounds/CREDITS.md says from where). Swapping any of them is
  * a matter of dropping the file in public/sounds/ and editing `src`
  * here, nothing that plays the sound needs to change.
  */
@@ -32,6 +44,10 @@ const SOUNDS: Record<SoundName, SoundConfig> = {
   send: { src: "/sounds/send.wav", volume: 0.55 },
   // Atmosphere only — it should be barely noticeable until it's gone.
   ambient: { src: "/sounds/ambient.wav", volume: 0.12, loop: true },
+  // Ogg first, mp3 for the browsers that won't play it.
+  pickup: { src: ["/sounds/pickup.ogg", "/sounds/pickup.mp3"], volume: 0.35, restart: true },
+  land: { src: ["/sounds/land.ogg", "/sounds/land.mp3"], volume: 0.4, restart: true },
+  dizzy: { src: ["/sounds/dizzy.ogg", "/sounds/dizzy.mp3"], volume: 0.3, restart: true },
 };
 
 // Module-level singleton, not React state: sounds are fired from all
@@ -49,7 +65,7 @@ function getHowl(name: SoundName): Howl {
   let howl = howls.get(name);
   if (!howl) {
     const { src, volume, loop } = SOUNDS[name];
-    howl = new Howl({ src: [src], volume, loop });
+    howl = new Howl({ src: [src].flat(), volume, loop });
     howls.set(name, howl);
   }
   return howl;
@@ -70,6 +86,7 @@ export function playSound(name: SoundName) {
   // A looping sound that's already running would otherwise stack a
   // second copy on top of itself.
   if (SOUNDS[name].loop && howl.playing()) return;
+  if (SOUNDS[name].restart) howl.stop();
   howl.play();
 }
 

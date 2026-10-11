@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentType, type CSSProperties } from "react";
+import { useState, type ComponentType, type CSSProperties, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import { Window } from "./Window";
@@ -95,6 +95,12 @@ export interface DesktopProps {
    * which theme is active (see the component doc comment below).
    */
   icons: DesktopIconConfig[];
+  /**
+   * Drawn over the wallpaper and under everything else — the animated
+   * sky (DesktopBackdrop). Passed in rather than rendered here because
+   * it's per-profile, and Desktop doesn't know which profile is active.
+   */
+  backdrop?: ReactNode;
   className?: string;
 }
 
@@ -138,7 +144,7 @@ function anchorStyle(icon: DesktopIconConfig): CSSProperties {
  * caller resolves that via getActiveDesktopIcons(theme) before Desktop
  * ever sees it.
  */
-export function Desktop({ wm, icons, className }: DesktopProps) {
+export function Desktop({ wm, icons, backdrop, className }: DesktopProps) {
   const visibleWindows = wm.windows.filter((w) => !w.isMinimized);
   // Lifted above secure_vault's own window — a window's content
   // subtree unmounts on both minimize AND close (see Window/Desktop's
@@ -162,6 +168,8 @@ export function Desktop({ wm, icons, className }: DesktopProps) {
         imageRendering: "pixelated",
       }}
     >
+      {backdrop}
+
       {icons.map((icon) => (
         <DesktopIcon
           key={icon.id}

@@ -9,8 +9,10 @@ import { useEffect, useState } from "react";
 import { BootSequence } from "@/components/boot/BootSequence";
 import { LoginScreen } from "@/components/login/LoginScreen";
 import { Desktop } from "@/components/desktop/Desktop";
+import { DesktopBackdrop } from "@/components/desktop/DesktopBackdrop";
 import { Taskbar } from "@/components/desktop/Taskbar";
 import { FullscreenTooltip } from "@/components/ui/FullscreenTooltip";
+import { Assistant } from "@/components/assistant/Assistant";
 import { GlitchEffect } from "@/components/effects/GlitchEffect";
 import { MobileLayout } from "@/components/mobile/MobileLayout";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -114,8 +116,14 @@ export default function Home() {
 
   return (
     <main className="flex flex-1 flex-col">
-      <Desktop wm={wm} icons={getActiveDesktopIcons(theme)} className="flex-1" />
+      <Desktop
+        wm={wm}
+        icons={getActiveDesktopIcons(theme)}
+        backdrop={<DesktopBackdrop theme={theme} />}
+        className="flex-1"
+      />
       <Taskbar wm={wm} theme={theme} onShutDown={handleShutDown} />
+      <Assistant theme={theme} wm={wm} />
       {showFullscreenTip ? (
         <FullscreenTooltip onDismiss={() => setShowFullscreenTip(false)} />
       ) : null}

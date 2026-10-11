@@ -1,0 +1,240 @@
+/*
+ * The animated desktop backdrop (components/desktop/DesktopBackdrop.tsx):
+ * drifting clouds, the banner plane, the searchlight. Positions and
+ * sizes are set inline, in the wallpaper's own pixel coordinates; this
+ * file is the stage they're measured against, and all of the motion.
+ */
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* Decoration only: never in the way of an icon or a window. */
+  pointer-events: none;
+  /* Lets the stage below be sized from this box (the cq* units). */
+  container-type: size;
+}
+
+/* A 16:9 box that covers the desktop exactly as the wallpaper image
+   does under `background-size: cover; background-position: center`
+   (see Desktop.tsx) — as wide as the desktop, or wider if that's what
+   it takes to be as tall — so a wallpaper pixel and a stage pixel are
+   always the same place. Itself a container, so that inside it… */
+.backdrop__stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, calc(100cqh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  container-type: size;
+  /* …one wallpaper pixel is this long. (Resolved where it's used, so
+     the 100cqw here is the stage's own width, not the desktop's.) */
+  --u: calc(100cqw / 1920);
+}
+
+.backdrop__stage img,
+.backdrop__plane,
+.backdrop__lamp {
+  image-rendering: pixelated;
+}
+
+/* --- Clouds ------------------------------------------------------- */
+
+/* One element per depth layer does the moving; the clouds on it (two
+   sets, a stage-width apart) just ride along. Sliding by exactly one
+   stage width puts the second set where the first began, so the loop
+   has no seam. */
+.backdrop__clouds {
+  position: absolute;
+  inset: 0;
+  animation: backdrop-drift linear infinite;
+  will-change: transform;
+}
+
+.backdrop__clouds img {
+  position: absolute;
+  height: auto;
+}
+
+/* Nearest (and biggest) first: quickest across, fully opaque. All of
+   them slow enough that you only see it if you watch — three to six
+   minutes to cross the screen. */
+.backdrop__clouds--0 {
+  animation-duration: 180s;
+}
+
+.backdrop__clouds--1 {
+  animation-duration: 260s;
+  opacity: 0.9;
+}
+
+.backdrop__clouds--2 {
+  animation-duration: 360s;
+  opacity: 0.75;
+}
+
+@keyframes backdrop-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* By night the same clouds sit higher — in what sky the skyline
+   leaves — and take on its colour: dim, blue-grey, barely there. */
+.backdrop--sec .backdrop__clouds {
+  /* Its own property, so it adds to the drift's transform. */
+  translate: 0 -47%;
+  filter: brightness(0.5) saturate(0.6);
+}
+
+.backdrop--sec .backdrop__clouds--0 {
+  opacity: 0.55;
+}
+
+.backdrop--sec .backdrop__clouds--1 {
+  opacity: 0.45;
+}
+
+.backdrop--sec .backdrop__clouds--2 {
+  opacity: 0.35;
+}
+
+/* --- The plane and its banner (dev) ------------------------------- */
+
+/* Banner, rope and plane in a row, nose first, crossing from fully
+   off the left edge to fully off the right: about 40 seconds on
+   screen. High up, well above the clouds, and a little washed out by
+   all the air in between. */
+.backdrop__flyby {
+  position: absolute;
+  left: 0;
+  top: 15%;
+  opacity: 0.82;
+  animation: backdrop-flyby 50s linear forwards;
+  will-change: transform;
+}
+
+@keyframes backdrop-flyby {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100cqw);
+  }
+}
+
+/* A pixel up, a pixel down, in steps. */
+.backdrop__flyby-bob {
+  display: flex;
+  align-items: center;
+  animation: backdrop-bob 2.4s steps(1, end) infinite;
+}
+
+@keyframes backdrop-bob {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(1px);
+  }
+}
+
+.backdrop__plane {
+  flex: none;
+  background-repeat: no-repeat;
+  animation: backdrop-two-frames 160ms steps(1, end) infinite;
+}
+
+@keyframes backdrop-two-frames {
+  0% {
+    background-position-x: 0%;
+  }
+  50% {
+    background-position-x: 100%;
+  }
+}
+
+.backdrop__rope {
+  flex: none;
+  height: 1px;
+  background: #181828;
+}
+
+/* Three frames stacked in one image (drawn in DesktopBackdrop.tsx),
+   stepped through for the cloth's ripple. */
+.backdrop__banner {
+  flex: none;
+  background-repeat: no-repeat;
+  /* Not pixelated, unlike everything else here: the lettering is one
+     wallpaper pixel thick, and on a screen smaller than the wallpaper
+     a hard-edged shrink drops whole strokes out of the letters. */
+  image-rendering: auto;
+  animation: backdrop-three-frames 720ms steps(1, end) infinite;
+}
+
+@keyframes backdrop-three-frames {
+  0% {
+    background-position-y: 0%;
+  }
+  33.33% {
+    background-position-y: 50%;
+  }
+  66.66% {
+    background-position-y: 100%;
+  }
+}
+
+/* --- The searchlight (sec) ---------------------------------------- */
+
+/* The beam's canvas is one pixel per wallpaper pixel, painted in
+   blocks (see BEAM_BLOCK) so the light is stepped. Not pixelated, for
+   the banner's reason: its lettering is a pixel thick, and wouldn't
+   survive a hard-edged shrink onto a smaller screen. */
+.backdrop__beam {
+  position: absolute;
+  image-rendering: auto;
+}
+
+.backdrop__skyline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.backdrop__lamp {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* --- Pausing ------------------------------------------------------ */
+
+/* Tab in the background: everything holds where it is. */
+.backdrop--paused * {
+  animation-play-state: paused !important;
+}
+
+/* Reduced motion: the clouds stay where the wallpaper had them, and
+   the plane — when DesktopBackdrop.tsx shows it at all — hangs in
+   one place, nothing on it moving. (The beam doesn't sweep either;
+   that's handled in the component.) */
+.backdrop--still .backdrop__clouds,
+.backdrop--still .backdrop__flyby,
+.backdrop--still .backdrop__flyby * {
+  animation: none;
+}
+
+.backdrop--still .backdrop__flyby {
+  left: 34%;
+}

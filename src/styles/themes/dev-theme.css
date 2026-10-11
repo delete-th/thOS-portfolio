@@ -19,7 +19,10 @@
   --thos-titlebar-fg: #ffffff;
   --thos-accent: #008080;
   --thos-desktop-bg: #008080;
-  --thos-desktop-wallpaper: url("/wallpapers/day.jpg");
+  /* wallpapers/day.jpg with its clouds painted out — they're drawn,
+     drifting, by DesktopBackdrop instead (scripts/process-backdrop.mjs
+     makes both). */
+  --thos-desktop-wallpaper: url("/desktop/wallpaper-sky.jpg");
   --thos-content-font: var(--font-ui);
 
   /* Taskbar / Start button / taskbar window buttons */

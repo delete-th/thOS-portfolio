@@ -1,0 +1,100 @@
+{
+  "src": "/assistant/sprites.png",
+  "cellWidth": 108,
+  "cellHeight": 141,
+  "rows": {
+    "idle": {
+      "row": 0,
+      "frames": 3
+    },
+    "talking": {
+      "row": 1,
+      "frames": 3
+    },
+    "pondering": {
+      "row": 2,
+      "frames": 3
+    },
+    "happy": {
+      "row": 3,
+      "frames": 3
+    },
+    "glasses": {
+      "row": 4,
+      "frames": 3
+    },
+    "surprised": {
+      "row": 5,
+      "frames": 2
+    },
+    "base": {
+      "row": 6,
+      "frames": 1
+    },
+    "sitdown": {
+      "row": 7,
+      "frames": 3
+    }
+  },
+  "floorY": 140,
+  "centerX": 40,
+  "head": [
+    52,
+    21
+  ],
+  "lenses": [
+    {
+      "x": 42,
+      "y": 42,
+      "width": 5,
+      "height": 4
+    },
+    {
+      "x": 51,
+      "y": 42,
+      "width": 5,
+      "height": 4
+    }
+  ],
+  "cursor": {
+    "hover": {
+      "src": "/assistant/cursor.png",
+      "hotspot": [
+        8,
+        1
+      ]
+    },
+    "pressed": {
+      "src": "/assistant/cursor-pressed.png",
+      "hotspot": [
+        7,
+        1
+      ]
+    }
+  },
+  "drag": {
+    "src": "/assistant/sprites-drag.png",
+    "cellWidth": 103,
+    "cellHeight": 169,
+    "rows": {
+      "pickup": {
+        "row": 0,
+        "frames": 2
+      },
+      "struggle": {
+        "row": 1,
+        "frames": 3
+      },
+      "fall": {
+        "row": 2,
+        "frames": 4
+      }
+    },
+    "anchor": [
+      59,
+      3
+    ],
+    "carriedHeight": 165,
+    "landHeight": 152
+  }
+}

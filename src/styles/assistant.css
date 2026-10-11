@@ -1,0 +1,429 @@
+/*
+ * The desktop assistant (components/assistant/Assistant.tsx) — a
+ * Clippy-style helper sitting on the desktop just above the taskbar.
+ * Sprite size and frame position are set inline from
+ * data/assistant-sprites.json; this file is everything else.
+ */
+
+.assistant {
+  position: fixed;
+  /* Clear of the Recycle Bin, which owns the bottom-right corner (see
+     data/desktop-config.json). How high they sit — on the top edge of
+     the taskbar — is set inline, from SEAT_BOTTOM_PX in Assistant.tsx. */
+  right: 140px;
+  /* Over every window and menu, like the original assistants were;
+     under the fullscreen tip, glitch burst and CRT overlay. */
+  z-index: 9000;
+  /* Only the sprite and bubble themselves should catch clicks. */
+  pointer-events: none;
+}
+
+/* That corner is only where they start: once picked up and dropped
+   somewhere else, Assistant.tsx positions this inline instead. */
+
+/* A <button> for keyboard/screen-reader access, with every bit of
+   98.css's dialog-button chrome stripped — it's a character standing
+   on the desktop, not a control with a bevel. */
+.assistant__sprite {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  image-rendering: pixelated;
+  pointer-events: auto;
+  /* No drag-select or long-press callout while holding on it. */
+  user-select: none;
+  -webkit-touch-callout: none;
+  /* A touch on them is a tap, a long-press or a drag — never a scroll
+     or a pinch. */
+  touch-action: none;
+}
+
+/* Held down: they sink a pixel, the first hint that holding does
+   something. Delayed (like the ring below) so a quick tap doesn't
+   flicker. */
+.assistant__sprite--pressed {
+  transform-origin: 50% 100%;
+  animation: assistant-press 1ms steps(1, end) 90ms forwards;
+}
+
+@keyframes assistant-press {
+  to {
+    transform: scaleY(0.99);
+  }
+}
+
+/* The ring that fills around the pointer during a press: 2px dots,
+   positioned and timed inline by HoldRing in Assistant.tsx, each one
+   switching on in turn until the long-press fires. */
+.assistant__hold-ring {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.assistant__hold-ring > span {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #000000;
+  opacity: 0;
+  animation: assistant-hold-dot 1ms steps(1, end) forwards;
+}
+
+@keyframes assistant-hold-dot {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Their shadow: a pixel ellipse built from 1px rows (see Shadow in
+   Assistant.tsx), behind the sprite and never in the way of a click. */
+.assistant__shadow {
+  position: absolute;
+  pointer-events: none;
+}
+
+.assistant__shadow > span {
+  position: absolute;
+  height: 1px;
+  background: #000000;
+}
+
+/* The landing: one frame squashed against the floor, then back. */
+.assistant__sprite--landing {
+  animation: assistant-squash 180ms steps(1, end);
+}
+
+@keyframes assistant-squash {
+  0% {
+    transform: scale(1.1, 0.9);
+  }
+  50%,
+  100% {
+    transform: none;
+  }
+}
+
+/* The hand that's carrying them — the pressed cursor, drawn as part
+   of the scene (the real one is hidden) so it can sit on top of them
+   and stay put while they swing underneath it. */
+.assistant__hand {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+/* Two stars circling their head after a landing. The wrapper sits at
+   the top-centre of the head; each star is a 1px box whose shadows
+   draw a 7px star, stepped around an ellipse half a turn apart. */
+.assistant__stars {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.assistant__star {
+  position: absolute;
+  left: 0;
+  top: -7px;
+  width: 1px;
+  height: 1px;
+  background: #ffffff;
+  /* Light arms fading to grey tips, with dark corners tucked between
+     them so the star still reads against a pale wallpaper. */
+  box-shadow:
+    0 -1px #f0f0f0,
+    0 1px #f0f0f0,
+    -1px 0 #f0f0f0,
+    1px 0 #f0f0f0,
+    0 -2px #d8d8d8,
+    0 2px #d8d8d8,
+    -2px 0 #d8d8d8,
+    2px 0 #d8d8d8,
+    0 -3px #909090,
+    0 3px #909090,
+    -3px 0 #909090,
+    3px 0 #909090,
+    -1px -1px #686868,
+    1px -1px #686868,
+    -1px 1px #686868,
+    1px 1px #686868;
+  animation: assistant-orbit 500ms steps(1, end);
+}
+
+.assistant__star + .assistant__star {
+  animation-delay: -250ms;
+}
+
+@keyframes assistant-orbit {
+  0% {
+    transform: translate(18px, 0);
+  }
+  12.5% {
+    transform: translate(13px, 3px);
+  }
+  25% {
+    transform: translate(0, 4px);
+  }
+  37.5% {
+    transform: translate(-13px, 3px);
+  }
+  50% {
+    transform: translate(-18px, 0);
+  }
+  62.5% {
+    transform: translate(-13px, -3px);
+  }
+  75% {
+    transform: translate(0, -4px);
+  }
+  87.5%,
+  100% {
+    transform: translate(13px, -3px);
+  }
+}
+
+.assistant__sprite:active,
+.assistant__sprite:focus {
+  padding: 0;
+  box-shadow: none;
+  /* 98.css draws its dotted focus box on every focused button, mouse
+     clicks included — here that's a rectangle around the character
+     each time they're clicked. */
+  outline: none;
+}
+
+/* Keyboard focus still gets one. */
+.assistant__sprite:focus-visible {
+  outline: 1px dotted #ffffff;
+}
+
+/* The glasses glint, drawn here rather than taken from the art (see
+   scripts/process-assistant-sprites.mjs for why): each lens dims a
+   shade so a white streak has something to show up against. */
+.assistant__lens {
+  position: absolute;
+  background: #b8b8b8;
+}
+
+.assistant__glint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: #ffffff;
+}
+
+/* Classic assistant speech balloon: tooltip yellow, hard black border. */
+.assistant__bubble {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 230px;
+  padding: 8px 10px;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  background: #ffffe1;
+  color: #000000;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.3;
+  pointer-events: auto;
+}
+
+/* The tail: a black triangle with a slightly smaller yellow one over
+   it, pointing down at the character's head. */
+.assistant__bubble::before,
+.assistant__bubble::after {
+  content: "";
+  position: absolute;
+  right: 44px;
+  border-style: solid;
+  border-color: transparent;
+}
+
+.assistant__bubble::before {
+  bottom: -10px;
+  border-width: 10px 8px 0 8px;
+  border-top-color: #000000;
+}
+
+.assistant__bubble::after {
+  bottom: -8px;
+  margin-right: 1px;
+  border-width: 9px 7px 0 7px;
+  border-top-color: #ffffe1;
+}
+
+.assistant__bubble strong {
+  font-weight: bold;
+}
+
+/* A bubble answering a menu topic: the same balloon, with buttons
+   (plain 98.css ones) under the text. Clicking anywhere on it turns
+   the page, until the last one. */
+.assistant__bubble--topic {
+  cursor: default;
+}
+
+.assistant__bubble--topic p {
+  margin: 0;
+}
+
+.assistant__bubble-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.assistant__bubble-actions button {
+  min-width: 0;
+  padding: 0 8px;
+  font-size: 13px;
+}
+
+/* The "Ask me about…" menu: a Win98 popup panel (its bevel and
+   theme colours come from lib/win98Panel.ts) standing where the
+   speech bubble does, with the same tail. */
+.assistant__menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 236px;
+  pointer-events: auto;
+}
+
+.assistant__menu-panel {
+  /* Never taller than the room above them. */
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding: 2px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+}
+
+.assistant__menu-title {
+  padding: 3px 6px;
+  background: var(--thos-menu-hover-bg);
+  color: var(--thos-menu-hover-fg);
+  font-weight: bold;
+}
+
+.assistant__menu-items {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0;
+}
+
+/* Start-menu style items: no button chrome, a solid highlight bar on
+   hover or keyboard focus. */
+.assistant__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  padding: 4px 6px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 14px;
+  text-align: left;
+}
+
+.assistant__menu-item:hover,
+.assistant__menu-item:focus,
+.assistant__menu-item:active {
+  padding: 4px 6px;
+  background: var(--thos-menu-hover-bg);
+  box-shadow: none;
+  outline: none;
+}
+
+[data-thos-theme] .assistant__menu .assistant__menu-item:hover,
+[data-thos-theme] .assistant__menu .assistant__menu-item:focus {
+  color: var(--thos-menu-hover-fg);
+}
+
+.assistant__menu-item img {
+  flex: none;
+  image-rendering: pixelated;
+}
+
+/* No icon, so indented to line its text up with the others'. */
+.assistant__menu-item--plain,
+.assistant__menu-item--plain:hover,
+.assistant__menu-item--plain:focus,
+.assistant__menu-item--plain:active {
+  padding-left: 30px;
+}
+
+.assistant__menu-separator {
+  height: 2px;
+  margin: 3px 4px;
+  border-top: 1px solid #808080;
+  border-bottom: 1px solid #ffffff;
+}
+
+/* The menu's tail, built like the bubble's: a dark triangle with a
+   smaller one in the panel's colour over it. On the wrapper rather
+   than the panel, which clips anything outside itself to scroll. */
+.assistant__menu::before,
+.assistant__menu::after {
+  content: "";
+  position: absolute;
+  right: 44px;
+  border-style: solid;
+  border-color: transparent;
+}
+
+.assistant__menu::before {
+  bottom: -10px;
+  border-width: 10px 8px 0 8px;
+  border-top-color: #000000;
+}
+
+.assistant__menu::after {
+  bottom: -7px;
+  margin-right: 2px;
+  border-width: 8px 6px 0 6px;
+  border-top-color: var(--thos-panel-bg);
+}
+
+/* Dropped near the left edge, where a bubble or menu extending
+   leftwards would run off screen: it extends rightwards instead, tail
+   mirrored. */
+.assistant--bubble-right .assistant__bubble,
+.assistant--bubble-right .assistant__menu {
+  right: auto;
+  left: 0;
+}
+
+.assistant--bubble-right .assistant__bubble::before,
+.assistant--bubble-right .assistant__bubble::after,
+.assistant--bubble-right .assistant__menu::before,
+.assistant--bubble-right .assistant__menu::after {
+  right: auto;
+  left: 45px;
+}
+
+.assistant--bubble-right .assistant__bubble::after {
+  margin-right: 0;
+  margin-left: 1px;
+}
+
+.assistant--bubble-right .assistant__menu::after {
+  margin-right: 0;
+  margin-left: 2px;
+}
